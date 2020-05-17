@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="main">
+    <div id="bookmarks">
+        {%if request.GET.q %}
+            <p>Searched for <strong>{{request.GET.q}}</strong> in your bookmarks. Found {{posts|length}} {{posts|pluralize:"result,results"}}</p>
+        {%else%}
+            <p>Please enter a query.</p>
+        {%endif%}
+        {% include "bookmarks.html" %}    
+    </div>
+    <div id="search">
+        <form action="{% url 'search' %}">
+            <input name="q">
+            <input type="submit">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

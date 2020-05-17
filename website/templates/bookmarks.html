@@ -1,0 +1,20 @@
+{% block content %}
+{% if posts %}
+    {% for post in posts %}
+    <div class="bookmark" id="{{post.id}}">
+        {% if post.fav %}
+        <span class="star">✭</span>
+        {% endif %}
+        <a class="title" href="{{post.url}}">{{post.title}}</a> <br>
+        <a class="url" href="{{post.url}}">{{post.url | truncatechars:70}}</a> <br> 
+        <a class="time" href="#" title="{{post.date|date:"o.m.d   H.i.s" | lower}}">{{post.date|date:"F Y" | lower}}</a>
+        <a class="delete" href="{% url 'delete' post_id=post.id%}">delete</a>
+        {% if post.fav %}
+        <a class="unfav" href="{% url 'fav' post_id=post.id%}">unfav</a>
+        {% else %}
+        <a class="fav" href="{% url 'fav' post_id=post.id%}">fav</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,80 @@
+body {
+    font-size: 13px;
+    margin-left: 20px;
+    font-family: helvetica, sans-serif;
+}
+
+#content {
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+#main {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: space-evenly;
+}
+
+#search {
+    padding-top: 2em;
+}
+
+#bookmarks {
+    flex-direction: column;
+}
+
+a { 
+    text-decoration:none;
+    color:#888888; /*1111aa */
+}
+a:visited { color:#888888 }
+
+
+.bookmark {
+    margin-bottom: 1.3em;
+    padding: 3px; 
+}
+
+
+.bookmark .title {
+    font-size: 110%;
+    color: #bb4411;
+}
+
+.bookmark .url {
+    font-size: 0.9em;
+    color: #888888;
+}
+
+.bookmark .time {
+    font-size: 90%;
+    color: #777777;
+}
+
+
+
+#banner {
+    border-bottom: 1px dotted #aaa;
+    padding: 5px;
+    margin-bottom: 2em;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+#top-menu a {
+    padding-left: 1em;
+}
+
+.delete {
+    color: #bb4411;
+}
+
+#bookmarks {
+    display: flex;
+}
+
+.pagination {
+    align-self: center;
+}

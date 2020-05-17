@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <script src="{%static 'main.js' %}"></script>
+    </head>
+    <body>
+    <div id="content">
+    <div id="banner">
+        <div id="logo">
+            {% if user.is_authenticated %}
+            <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>
+            {% else %}
+            <a href="{% url 'index' %}">Bookmark Manager</a>
+            {% endif %}
+
+        </div>
+        <div id="top-menu">
+            {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">logout</a>
+            <a href="{% url 'account' %}">account</a>
+            <a href="{% url 'add' %}">add</a>
+            {% else %}
+            <a href="{% url 'login' %}">login</a>
+            {% endif %}
+        </div>
+    </div>
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
