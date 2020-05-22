@@ -98,7 +98,6 @@ class SearchView(generic.ListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Searching " + self.request.GET.get("q")
-        print(data)
         data['title'] = title
         return data
 
