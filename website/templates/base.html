@@ -4,6 +4,7 @@
         {% load static %}
         <link rel="stylesheet" href="{% static 'main.css' %}">
         <script src="{%static 'main.js' %}"></script>
+        <title>{{title}}</title>
     </head>
     <body>
     <div id="content">
@@ -23,6 +24,7 @@
             <a href="{% url 'add' %}">add</a>
             {% else %}
             <a href="{% url 'login' %}">login</a>
+            <a href="{% url 'signup' %}">signup</a>
             {% endif %}
         </div>
     </div>
