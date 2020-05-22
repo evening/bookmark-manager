@@ -1,9 +1,10 @@
 {% block content %}
 {% if posts %}
     {% for post in posts %}
+    {% if post.fav %}
+    <div class="bookmark faved" id="{{post.id}}">
+        {% else %}
     <div class="bookmark" id="{{post.id}}">
-        {% if post.fav %}
-        <span class="star">✭</span>
         {% endif %}
         <a class="title" href="{{post.url}}">{{post.title}}</a> <br>
         <a class="url" href="{{post.url}}">{{post.url | truncatechars:70}}</a> <br> 

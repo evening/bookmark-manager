@@ -52,8 +52,6 @@ a:visited { color:#888888 }
     color: #777777;
 }
 
-
-
 #banner {
     border-bottom: 1px dotted #aaa;
     padding: 5px;
@@ -77,4 +75,8 @@ a:visited { color:#888888 }
 
 .pagination {
     align-self: center;
+}
+
+.faved {
+    outline: dashed 2px #777777;
 }
