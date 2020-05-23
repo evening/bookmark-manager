@@ -13,24 +13,20 @@ class Account(AbstractUser):
     last_name = None
 
 
-# https://stackoverflow.com/questions/10052220/advantages-to-using-urlfield-over-textfield
-class Post(models.Model):  # better name Bookmark maybe
+class Post(models.Model):
     title = models.CharField(max_length=100, blank=True, default="")
     url = models.URLField()
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     fav = models.BooleanField(default=False)
-    to_read = models.BooleanField(default=False)
-    public = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         # "Google.com" doesnt work, decoding fails, think of better ways
         if not self.title:
             try:
                 if not urlparse(self.url).scheme:
-                    self.url = "http://" + url  # TODO: probably a better way
-                r = requests.get(self.url).content.decode("utf8")
-                self.title = BeautifulSoup(r, "html.parser").find("title").string
+                    self.url = "http://" + self.url  # TODO: probably a better way
+                self.title = BeautifulSoup(requests.get(self.url).text).title.text
             except:
                 pass
         super(Post, self).save(*args, **kwargs)

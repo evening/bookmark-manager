@@ -23,8 +23,10 @@ class SignUpForm(UserCreationForm):
 class AddPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ("title", "url", "fav", "to_read", "public")
-
+        fields = ("title", "url", "fav")
+    def __init__(self, *args, **kwargs):
+        super(AddPostForm, self).__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs={"value":"http://"}
 
 class EditProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
