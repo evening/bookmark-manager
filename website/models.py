@@ -21,11 +21,10 @@ class Post(models.Model):
     fav = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # "Google.com" doesnt work, decoding fails, think of better ways
         if not self.title:
             try:
                 if not urlparse(self.url).scheme:
-                    self.url = "http://" + self.url  # TODO: probably a better way
+                    self.url = "http://" + self.url
                 self.title = BeautifulSoup(requests.get(self.url).text).title.text
             except:
                 pass
@@ -33,7 +32,3 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} | {self.url}"
-
-
-# class Tags(models.Model):
-# class Group (models.Model):
