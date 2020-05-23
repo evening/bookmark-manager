@@ -28,6 +28,7 @@ a {
     text-decoration:none;
     color:#888888; /*1111aa */
 }
+
 a:visited { color:#888888 }
 
 
@@ -79,4 +80,17 @@ a:visited { color:#888888 }
 
 .faved {
     outline: dashed 2px #777777;
+}
+
+
+a.cancel-confirm {
+    color: #11a;
+}
+
+a.destroy-confirm {
+    color: red;
+}
+
+.star {
+    display: inline;
 }

@@ -24,7 +24,7 @@ def delete(request, post_id):
     query = Post.objects.get(id=post_id)
     if query.author == request.user:
         query.delete()
-    return redirect("index")
+    return HttpResponse(status=200)
     # catch exception
     
 # see if there are better ways to do this
@@ -33,7 +33,7 @@ def fav(request, post_id):
     if query.author == request.user:
         query.fav ^= True
         query.save()
-    return redirect("index")
+    return HttpResponse(status=200)
     # catch exception
 
 
