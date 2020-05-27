@@ -9,28 +9,34 @@
     </head>
     <body>
     <div id="content">
-    <div id="banner">
-        <div id="logo">
-            {% if user.is_authenticated %}
-            <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>
-            {% else %}
-            <a href="{% url 'index' %}">Bookmark Manager</a>
-            {% endif %}
+        <div id="banner">
+            <div id="logo">
+                {% if user.is_authenticated %}
+                <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>
+                {% else %}
+                <a href="{% url 'index' %}">Bookmark Manager</a>
+                {% endif %}
 
+            </div>
+            <div id="top-menu">
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">logout</a>
+                <a href="{% url 'account' %}">account</a>
+                <a href="{% url 'add' %}">add</a>
+                {% else %}
+                <a href="{% url 'login' %}">login</a>
+                <a href="{% url 'signup' %}">signup</a>
+                {% endif %}
+            </div>
         </div>
-        <div id="top-menu">
-            {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">logout</a>
-            <a href="{% url 'account' %}">account</a>
-            <a href="{% url 'add' %}">add</a>
-            {% else %}
-            <a href="{% url 'login' %}">login</a>
-            <a href="{% url 'signup' %}">signup</a>
-            {% endif %}
-        </div>
+    {% block content %}
+    {% endblock %}
+    <footer class="footer">
+        <hr style="border-top:1px dotted #aaa;">
+        &lt;<a href="mailto:support@pinboard.in">support@pinboard.in</a>&gt;
+    </footer>
+
     </div>
-        {% block content %}
-        {% endblock %}
-    </div>
+    
 </body>
 </html>
