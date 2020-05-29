@@ -16,8 +16,8 @@ urlpatterns = [
     path("account", views.EditProfile.as_view(), name="account"),
     path("add", views.Add.as_view(), name="add"),
     path("autoadd", views.autoadd, name="autoadd"),
-    path("delete/<int:post_id>", views.delete, name="delete"),
-    path("fav/<int:post_id>", views.fav, name="fav"),
+    path("delete/", views.delete, name="delete"),
+    path("fav/", views.fav, name="fav"),
     path("search/", views.SearchView.as_view(), name="search"),
     path(
         "account/password", views.PasswordChangeView.as_view(), name="password_change"

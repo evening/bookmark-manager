@@ -19,16 +19,17 @@ from django.http import HttpResponseRedirect
 
 website_title = "Bookmark Manager :: "
 
-# see if there are better ways to do this
-def delete(request, post_id):
+def delete(request):
+    post_id = request.POST.get("id")
     query = Post.objects.get(id=post_id)
     if query.author == request.user:
         query.delete()
     return HttpResponse(status=200)
     # catch exception
     
-# see if there are better ways to do this
-def fav(request, post_id):
+
+def fav(request):
+    post_id = request.POST.get("id")
     query = Post.objects.get(id=post_id)
     if query.author == request.user:
         query.fav ^= True

@@ -18,6 +18,7 @@
 
     </div>
     {% endfor %}
+    {% if page_obj.paginator.num_pages > 1 %}
     <div class="pagination">
         {% if page_obj.has_previous %}
             <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; first</a>
@@ -32,7 +33,9 @@
             <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">next</a>
             <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">last &raquo;</a>
         {% endif %}
-</div>
+
+    </div>
+    {% endif %}
 
 {% endif %}
 {% endblock %}
