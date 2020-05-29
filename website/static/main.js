@@ -1,5 +1,5 @@
-var FAV_URL = "/fav/";
-var DELETE_URL = "/delete/"
+var FAV_URL = location.origin + "/fav/";
+var DELETE_URL = location.origin + "/delete/"
 
 function prepare_vals(vals) {
     var ret = [];
@@ -9,22 +9,27 @@ function prepare_vals(vals) {
     return ret.join("&")
 }
 
+function send_post_request(id, URL) {
+    var request = new XMLHttpRequest();
+    var data = {
+        "csrfmiddlewaretoken": get_cookie("csrftoken"),
+        "id": id
+    }
+    request.open("POST", URL);
+    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    request.send(prepare_vals(data));
+    return request;
+}
+
 function get_cookie(name) {
     var b = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return b ? b.pop() : '';
 }
 
 function toggle_fav(id) {
-    var request = new XMLHttpRequest();
-    var data = {
-        "csrfmiddlewaretoken": get_cookie("csrftoken"),
-        "id": id
-    }
-    request.open("POST", location.origin + FAV_URL);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-    request.send(prepare_vals(data));
-    request.onload = function () {
-        if (request.status == 200) {
+    response = send_post_request(id, FAV_URL)
+    response.onload = function () {
+        if (response.status == 200) {
             var bookmark = document.getElementById(id);
             bookmark.classList.toggle("faved");
             var fav = bookmark.getElementsByClassName("fav")[0];
@@ -34,7 +39,7 @@ function toggle_fav(id) {
                 fav.innerHTML = "fav";
             }
         } else {
-            alert(`${request.status}: ${request.statusText}`);
+            alert(`${response.status}: ${response.statusText}`);
         }
     }
 }
@@ -73,19 +78,12 @@ function cancel_delete(id) {
 }
 
 function confirm_destroy(id) {
-    var request = new XMLHttpRequest();
-    request.open("POST", location.origin + DELETE_URL);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-    var data = {
-        "csrfmiddlewaretoken": get_cookie("csrftoken"),
-        "id": id
-    }
-    request.send(prepare_vals(data));
-    request.onload = function () {
-        if (request.status == 200) {
+    response = send_post_request(id, DELETE_URL)
+    response.onload = function () {
+        if (response.status == 200) {
             document.getElementById(id).remove();
         } else {
-            alert(`${request.status}: ${request.statusText}`);
+            alert(`${response.status}: ${response.statusText}`);
         }
     }
 
