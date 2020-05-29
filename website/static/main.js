@@ -1,20 +1,30 @@
 var FAV_URL = location.origin + "/fav/";
 var DELETE_URL = location.origin + "/delete/"
+var EDIT_URL = location.origin + "/edit/"
 
 function prepare_vals(vals) {
-    var ret = [];
-    for (var v in vals) {
+    ret = [];
+    for (v in vals) {
         ret.push(v + "=" + encodeURIComponent(vals[v]));
     }
     return ret.join("&")
 }
 
-function send_post_request(id, URL) {
-    var request = new XMLHttpRequest();
-    var data = {
+function truncate(str) {
+    if (str.length <= 69) {
+        return str
+    }
+    return str.slice(0, 69) + "…"
+}
+
+
+function send_post_request(id, URL, extra = {}) {
+    request = new XMLHttpRequest();
+    data = {
         "csrfmiddlewaretoken": get_cookie("csrftoken"),
         "id": id
     }
+    data = Object.assign({}, data, extra)
     request.open("POST", URL);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
     request.send(prepare_vals(data));
@@ -22,33 +32,33 @@ function send_post_request(id, URL) {
 }
 
 function get_cookie(name) {
-    var b = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    b = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return b ? b.pop() : '';
 }
 
 function toggle_fav(id) {
     response = send_post_request(id, FAV_URL)
     response.onload = function () {
-        if (response.status == 200) {
-            var bookmark = document.getElementById(id);
+        if (response.readyState == 4 && response.status == 200) {
+            bookmark = document.getElementById(id);
             bookmark.classList.toggle("faved");
-            var fav = bookmark.getElementsByClassName("fav")[0];
+            fav = bookmark.getElementsByClassName("fav")[0];
             if (fav.innerHTML == "fav") {
                 fav.innerHTML = "unfav";
             } else if (fav.innerHTML == "unfav") {
                 fav.innerHTML = "fav";
             }
         } else {
-            alert(`${response.status}: ${response.statusText}`);
+            alert(`${response.status}: Error toggling favorite.`);
         }
     }
 }
 
 function delete_bookmark(id) {
-    var bookmark = document.getElementById(id);
-    var elem = document.createElement("span");
+    bookmark = document.getElementById(id);
+    elem = document.createElement("span");
     elem.className = "toggle-menu";
-    var destroy = document.createElement("a");
+    destroy = document.createElement("a");
     destroy.href = "#";
     destroy.innerHTML = "destroy";
     destroy.className = "destroy-confirm";
@@ -56,7 +66,7 @@ function delete_bookmark(id) {
         confirm_destroy(id);
         return false;
     }
-    var cancel = document.createElement("a");
+    cancel = document.createElement("a");
     cancel.href = "#"
     cancel.innerHTML = "cancel";
     cancel.className = "cancel-confirm";
@@ -72,7 +82,7 @@ function delete_bookmark(id) {
 }
 
 function cancel_delete(id) {
-    var div = document.getElementById(id);
+    div = document.getElementById(id);
     div.getElementsByClassName("toggle-menu")[0].remove();
     div.getElementsByClassName("delete")[0].style.display = "inline";
 }
@@ -83,7 +93,96 @@ function confirm_destroy(id) {
         if (response.status == 200) {
             document.getElementById(id).remove();
         } else {
-            alert(`${response.status}: ${response.statusText}`);
+            alert(`${response.status}: Error destroying`);
+        }
+    }
+}
+
+function edit_bookmark(id) {
+    bookmark = document.getElementById(id)
+    c = bookmark.children
+    edit_menu = document.createElement("div")
+    edit_menu.className = "edit-menu";
+    // edit_menu = document.createElement("form")
+    // edit_menu.method = "post"
+    // edit_menu.action = "/edit/"
+
+    // csrf = document.createElement("input")
+    // csrf.name = "csrfmiddlewaretoken"
+    // csrf.value = get_cookie("csrftoken")
+    // csrf.type = "hidden"
+    // id_hidden = document.createElement("input")
+    // id_hidden.name = "id"
+    // id_hidden.value = id
+    // id_hidden.type = "hidden"
+
+    br = document.createElement("br");
+    title = document.createElement("input")
+    title.name = "title"
+    title.value = bookmark.querySelector(".title").innerText
+
+    url = document.createElement("input")
+    url.name = "url"
+    url.type = "url"
+    url.value = bookmark.querySelector(".url").href
+
+    submit = document.createElement("input")
+    submit.value = "submit";
+    submit.type = "submit"
+    cancel = document.createElement("input")
+    cancel.value = "cancel";
+    cancel.type = "reset";
+    // edit_menu.appendChild(csrf);
+    // edit_menu.appendChild(id_hidden);
+    edit_menu.appendChild(title);
+    edit_menu.appendChild(br)
+    edit_menu.appendChild(url);
+    edit_menu.appendChild(submit);
+    edit_menu.appendChild(cancel);
+
+    for (i = 0; i < c.length; i++) {
+        c[i].style.display = "none";
+    }
+    bookmark.appendChild(edit_menu);
+
+    cancel.onclick = function () {
+        clear_edit_menu(id);
+    }
+
+    submit.onclick = function () {
+        form_data = {
+            "url": url.value,
+            "title": title.value,
+        }
+        update_bookmark(id, form_data);
+        clear_edit_menu(id);
+
+    }
+}
+
+function clear_edit_menu(id) {
+    bookmark = document.getElementById(id)
+    edit_menu = bookmark.querySelector(".edit-menu")
+    edit_menu.remove()
+    for (i = 0; i < c.length; i++) {
+        c[i].style.display = "inline";
+    }
+    return false;
+}
+
+
+function update_bookmark(id) {
+    response = send_post_request(id, EDIT_URL, form_data)
+    response.onload = function () {
+        if (response.status == 200) {
+            bookmark = document.getElementById(id);
+            updated_chil = JSON.parse(response.responseText);
+            bookmark.querySelector(".title").innerText = updated_chil["title"]
+            bookmark.querySelector(".url").innerText = truncate(updated_chil["url"])
+            bookmark.querySelector(".title").href = updated_chil["url"]
+            bookmark.querySelector(".url").href = updated_chil["url"]
+        } else {
+            alert(`${response.status}: Error updating`);
         }
     }
 

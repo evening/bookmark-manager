@@ -14,8 +14,8 @@
         {% else %}
         <a class="fav" onclick="toggle_fav({{post.id}});return false;" href="#">fav</a>
         {% endif %}
+        <a class="edit" onclick="edit_bookmark({{post.id}});return false;" href="#">edit</a>
         <a class="delete" onclick="delete_bookmark({{post.id}});return false;" href="#">delete</a>
-
     </div>
     {% endfor %}
     {% if page_obj.paginator.num_pages > 1 %}
