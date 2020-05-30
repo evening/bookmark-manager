@@ -6,7 +6,12 @@
         {% else %}
     <div class="bookmark" id="{{post.id}}">
         {% endif %}
-        <a class="title" href="{{post.url}}">{{post.title}}</a> <br>
+        <a class="title" href="{{post.url}}">{{post.title}}</a>
+        {% if post.archive %}
+        <a href="{% url 'archive' post.id%}">🗗</a>
+        {% endif %}
+
+        <br>
         <a class="url" href="{{post.url}}">{{post.url | truncatechars:70}}</a> <br> 
         <a class="time" href="#" title="{{post.date|date:"o.m.d   H.i.s" | lower}}">{{post.date|date:"F Y" | lower}}</a>
         {% if post.fav %}
