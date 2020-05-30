@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.contrib.auth.models import AbstractUser
+import subprocess
+import sys
+import uuid
 
 
 class Account(AbstractUser):
@@ -13,12 +16,29 @@ class Account(AbstractUser):
     last_name = None
 
 
+class Archive(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date = models.DateTimeField(auto_now=True)
+    content = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.date} | {self.website_archive}"
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100, blank=True, default="")
     url = models.URLField()
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     fav = models.BooleanField(default=False)
+    archive = models.OneToOneField(
+        Archive, on_delete=models.CASCADE, null=True, related_name="website_archive"
+    )
+
+    def delete(self, *args, **kwargs):
+        if self.archive:
+            self.archive.delete()
+        super(Post, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if not self.title:
@@ -32,3 +52,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} | {self.url}"
+
+    def download_site(self, *args, **kwargs):
+        # https://github.com/Y2Z/monolith
+        out = subprocess.check_output(f"monolith {self.url} -j")
+        if sys.getsizeof(out) < 25_000_000:
+            self.archive = Archive.objects.create(content=out.decode("utf-8"))
+            super(Post, self).save(*args, **kwargs)

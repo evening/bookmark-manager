@@ -184,7 +184,7 @@ function update_bookmark(id) {
             bookmark.querySelector(".title").href = updated_data["url"]
             bookmark.querySelector(".url").href = updated_data["url"]
         } else {
-            alert(`${response.status}: Error updating`);
+            alert(`${response.status}: ${response.responseText}`);
         }
     }
 
