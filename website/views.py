@@ -14,7 +14,7 @@ from django.contrib.auth.views import (
 from django.db.models import Q
 import json
 from django.forms.models import model_to_dict
-
+import copy 
 website_title = "Bookmark Manager :: "
 
 
@@ -80,8 +80,12 @@ class PasswordChangeDoneView(PasswordChangeDoneView):
 
 
 def autoadd(request):
-    Post.objects.create(**request.GET.dict(), author=request.user)
-    return HttpResponseRedirect(request.GET.get("url"))
+    r = copy.deepcopy(request.GET.dict())
+    to_archive = r.pop("archive",None)
+    p = Post.objects.create(**r, author=request.user)
+    if to_archive:
+        p.download_site()
+    return HttpResponse(status=200)
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -167,6 +171,8 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
+        if self.request.POST.get("archive"):
+            self.object.download_site()
         return redirect("index")
 
     def get_context_data(self, **kwargs):
