@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.views import generic
-from website.models import Post, Account
+from website.models import Post, Account, Archive
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SignUpForm, AddPostForm, EditProfileForm
@@ -14,7 +14,8 @@ from django.contrib.auth.views import (
 from django.db.models import Q
 import json
 from django.forms.models import model_to_dict
-import copy 
+import copy
+
 website_title = "Bookmark Manager :: "
 
 
@@ -26,22 +27,33 @@ def delete(request):
     return HttpResponse(status=200)
 
 
-def view_archive(request, post_id):
+def view_archive(request, uuid):
     try:
-        archive_obj = Post.objects.get(pk=post_id).archive
+        archive_obj = Archive.objects.get(id=uuid)
         return HttpResponse(archive_obj.content, status=200)
-    except Post.DoesNotExist:
-        return HttpResponse("Not archived", status=200)
+    except Archive.DoesNotExist:
+        return HttpResponse("Not archived", status=500)
 
 
 def edit(request):
     r = request.POST
     p = Post.objects.get(id=r.get("id"))
+    to_delete = None
+    if (
+        p.archive and r.get("url") != p.url
+    ):  # if changing url when there's an archive, just delete
+        to_delete = p.archive
+        p.archive = None
+
     for k, v in r.items():
         if hasattr(p, k):
             setattr(p, k, v)
     p.save()
-    return HttpResponse(json.dumps(model_to_dict(p)), status=200)
+    if to_delete:
+        to_delete.delete()
+    ret = model_to_dict(p)
+    ret.pop("archive")
+    return HttpResponse(json.dumps(ret), status=200)
 
 
 def fav(request):
@@ -81,7 +93,7 @@ class PasswordChangeDoneView(PasswordChangeDoneView):
 
 def autoadd(request):
     r = copy.deepcopy(request.GET.dict())
-    to_archive = r.pop("archive",None)
+    to_archive = r.pop("archive", None)
     p = Post.objects.create(**r, author=request.user)
     if to_archive:
         p.download_site()

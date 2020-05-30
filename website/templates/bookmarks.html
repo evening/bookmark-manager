@@ -8,7 +8,7 @@
         {% endif %}
         <a class="title" href="{{post.url}}">{{post.title}}</a>
         {% if post.archive %}
-        <a href="{% url 'archive' post.id%}">🗗</a>
+        <a href="{% url 'archive' post.archive.id %}" title="{{post.archive.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
         {% endif %}
 
         <br>

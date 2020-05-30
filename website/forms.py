@@ -21,8 +21,8 @@ class SignUpForm(UserCreationForm):
 
 
 class AddPostForm(forms.ModelForm):
-    archive = forms.BooleanField(initial=False,required=False)
-    
+    archive = forms.BooleanField(initial=False, required=False)
+
     class Meta:
         model = Post
         fields = ("title", "url", "fav")
