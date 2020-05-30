@@ -164,6 +164,8 @@ function clear_edit_menu(id) {
     bookmark = document.getElementById(id)
     edit_menu = bookmark.querySelector(".edit-menu")
     edit_menu.remove()
+    c = bookmark.children
+
     for (i = 0; i < c.length; i++) {
         c[i].style.display = "inline";
     }
@@ -176,11 +178,11 @@ function update_bookmark(id) {
     response.onload = function () {
         if (response.status == 200) {
             bookmark = document.getElementById(id);
-            updated_chil = JSON.parse(response.responseText);
-            bookmark.querySelector(".title").innerText = updated_chil["title"]
-            bookmark.querySelector(".url").innerText = truncate(updated_chil["url"])
-            bookmark.querySelector(".title").href = updated_chil["url"]
-            bookmark.querySelector(".url").href = updated_chil["url"]
+            updated_data = JSON.parse(response.responseText);
+            bookmark.querySelector(".title").innerText = updated_data["title"]
+            bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
+            bookmark.querySelector(".title").href = updated_data["url"]
+            bookmark.querySelector(".url").href = updated_data["url"]
         } else {
             alert(`${response.status}: Error updating`);
         }
