@@ -19,6 +19,7 @@ urlpatterns = [
     path("delete/", views.delete, name="delete"),
     path("fav/", views.fav, name="fav"),
     path("edit/", views.edit, name="edit"),
+    path("archive/<int:post_id>", views.view_archive, name="archive"),
     path("search/", views.SearchView.as_view(), name="search"),
     path(
         "account/password", views.PasswordChangeView.as_view(), name="password_change"

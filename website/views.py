@@ -30,6 +30,14 @@ def delete(request):
     return HttpResponse(status=200)
 
 
+def view_archive(request,post_id):
+    try:
+        archive_obj = Post.objects.get(pk=post_id).archive
+        return HttpResponse(archive_obj.content,status=200)
+    except Post.DoesNotExist:
+        return HttpResponse("Not archived",status=200)
+
+
 def edit(request):
     r = request.POST
     p = Post.objects.get(id=r.get("id"))
