@@ -28,7 +28,6 @@ def delete(request):
     if query.author == request.user:
         query.delete()
     return HttpResponse(status=200)
-    # catch exception
 
 
 def edit(request):
@@ -37,22 +36,17 @@ def edit(request):
     for k,v in r.items():
         if hasattr(p,k):
             setattr(p,k,v)
-        else:
-            if k != "csrfmiddlewaretoken":
-                return HttpResponse(status=500)
     p.save()
     return HttpResponse(json.dumps(model_to_dict(p)),status=200)
 
 
 def fav(request):
-    print(request, request.POST.get("id"),"********")
     post_id = request.POST.get("id")
     query = Post.objects.get(id=post_id)
     if query.author == request.user:
         query.fav ^= True
         query.save()
     return HttpResponse(status=200)
-    # catch exception
 
 
 class LoginView(LoginView):
