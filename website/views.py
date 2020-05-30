@@ -1,26 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.views import generic
-from .models import Post
+from website.models import Post, Account
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SignUpForm, AddPostForm, EditProfileForm
 from django.urls import reverse_lazy
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import PasswordChangeForm
-from .models import Account
 from django.contrib.auth.views import (
     PasswordChangeView,
     PasswordChangeDoneView,
     LoginView,
 )
 from django.db.models import Q
-from django.http import HttpResponseRedirect
-from django.template.loader import render_to_string
-import json 
+import json
 from django.forms.models import model_to_dict
 
 website_title = "Bookmark Manager :: "
+
 
 def delete(request):
     post_id = request.POST.get("id")
@@ -30,22 +26,22 @@ def delete(request):
     return HttpResponse(status=200)
 
 
-def view_archive(request,post_id):
+def view_archive(request, post_id):
     try:
         archive_obj = Post.objects.get(pk=post_id).archive
-        return HttpResponse(archive_obj.content,status=200)
+        return HttpResponse(archive_obj.content, status=200)
     except Post.DoesNotExist:
-        return HttpResponse("Not archived",status=200)
+        return HttpResponse("Not archived", status=200)
 
 
 def edit(request):
     r = request.POST
     p = Post.objects.get(id=r.get("id"))
-    for k,v in r.items():
-        if hasattr(p,k):
-            setattr(p,k,v)
+    for k, v in r.items():
+        if hasattr(p, k):
+            setattr(p, k, v)
     p.save()
-    return HttpResponse(json.dumps(model_to_dict(p)),status=200)
+    return HttpResponse(json.dumps(model_to_dict(p)), status=200)
 
 
 def fav(request):
@@ -60,20 +56,22 @@ def fav(request):
 class LoginView(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Log in"
-        data['title'] = title
+        data["title"] = title
         return data
 
 
 class PasswordChangeView(PasswordChangeView):
     template_name = "change_password.html"
     success_url = reverse_lazy("account")
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Change password"
-        data['title'] = title
+        data["title"] = title
         return data
 
 
@@ -94,11 +92,13 @@ class IndexView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by("-date")
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title
-        data['title'] = title
+        data["title"] = title
         return data
+
 
 class SearchView(generic.ListView):
     template_name = "search.html"
@@ -111,15 +111,21 @@ class SearchView(generic.ListView):
         if q:
             return (
                 Post.objects.filter(author=self.request.user)
-                .filter(Q(title__contains=q) | Q(url__contains=q))
+                .filter(
+                    Q(title__icontains=q)
+                    | Q(url__icontains=q)
+                    | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
+                )
                 .order_by("-date")
             )
         return Post.objects.none()
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Searching " + self.request.GET.get("q")
-        data['title'] = title
+        data["title"] = title
         return data
+
 
 class SignUp(generic.CreateView):
     form_class = SignUpForm
@@ -130,11 +136,13 @@ class SignUp(generic.CreateView):
         if request.user.is_authenticated:
             return redirect("index")
         return super(SignUp, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Sign up"
-        data['title'] = title
+        data["title"] = title
         return data
+
 
 class EditProfile(LoginRequiredMixin, generic.UpdateView):
     form_class = EditProfileForm
@@ -143,11 +151,13 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Change account information"
-        data['title'] = title
+        data["title"] = title
         return data
+
 
 class Add(LoginRequiredMixin, generic.CreateView):
     template_name = "add.html"
@@ -162,5 +172,5 @@ class Add(LoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Add new link"
-        data['title'] = title
+        data["title"] = title
         return data

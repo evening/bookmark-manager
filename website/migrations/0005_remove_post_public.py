@@ -5,13 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('website', '0004_remove_post_to_read'),
-    ]
+    dependencies = [("website", "0004_remove_post_to_read")]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='post',
-            name='public',
-        ),
-    ]
+    operations = [migrations.RemoveField(model_name="post", name="public")]

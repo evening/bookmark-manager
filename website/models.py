@@ -13,9 +13,11 @@ class Account(AbstractUser):
     first_name = None
     last_name = None
 
+
 class Archive(models.Model):
     date = models.DateTimeField(auto_now=True)
     content = models.TextField(blank=True)
+
 
 class Post(models.Model):
     title = models.CharField(max_length=100, blank=True, default="")
@@ -23,7 +25,7 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     fav = models.BooleanField(default=False)
-    archive = models.OneToOneField(Archive, on_delete=models.CASCADE,null=True)
+    archive = models.OneToOneField(Archive, on_delete=models.CASCADE, null=True)
 
     def save(self, *args, **kwargs):
         if not self.title:
@@ -37,9 +39,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} | {self.url}"
-        
+
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith
-        out = subprocess.check_output(f'monolith {self.url} -j')
+        out = subprocess.check_output(f"monolith {self.url} -j")
         self.archive = Archive.objects.create(content=out.decode("utf-8"))
         super(Post, self).save(*args, **kwargs)

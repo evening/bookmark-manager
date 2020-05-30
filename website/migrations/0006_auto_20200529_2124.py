@@ -6,22 +6,32 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('website', '0005_remove_post_public'),
-    ]
+    dependencies = [("website", "0005_remove_post_public")]
 
     operations = [
         migrations.CreateModel(
-            name='Archive',
+            name="Archive",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now=True)),
-                ('content', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now=True)),
+                ("content", models.TextField(blank=True)),
             ],
         ),
         migrations.AddField(
-            model_name='post',
-            name='archive',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='website.Archive'),
+            model_name="post",
+            name="archive",
+            field=models.OneToOneField(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="website.Archive",
+            ),
         ),
     ]
