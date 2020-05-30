@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from django.contrib.auth.models import AbstractUser
 import subprocess
-
+import sys 
 
 class Account(AbstractUser):
     username = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
@@ -43,5 +43,6 @@ class Post(models.Model):
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith
         out = subprocess.check_output(f"monolith {self.url} -j")
-        self.archive = Archive.objects.create(content=out.decode("utf-8"))
-        super(Post, self).save(*args, **kwargs)
+        if sys.getsizeof(out) < 25000000:
+            self.archive = Archive.objects.create(content=out.decode("utf-8"))
+            super(Post, self).save(*args, **kwargs)
