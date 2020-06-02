@@ -30,7 +30,9 @@ def delete(request):
 def view_archive(request, uuid):
     try:
         archive_obj = Archive.objects.get(id=uuid)
-        return HttpResponse(archive_obj.content, status=200)
+        return HttpResponse(
+            archive_obj.content, status=200, content_type=archive_obj.content_type
+        )
     except Archive.DoesNotExist:
         return HttpResponse("Not archived", status=500)
 
