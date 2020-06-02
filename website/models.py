@@ -64,10 +64,11 @@ class Post(models.Model):
         return f"{self.title} | {self.url}"
 
     def queue_download(self, *args, **kwargs):
+        self.archive = Archive.objects.create()
+        self.save()
         t = threading.Thread(target=self.download_site, args=args, kwargs=kwargs)
         t.setDaemon(True)
         t.start()
-        return
 
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith
@@ -81,6 +82,6 @@ class Post(models.Model):
                 return
         else:
             out = res.content
-        self.archive = Archive.objects.create(content_type=content_type)
+        self.archive.content_type = content_type
         self.archive.content.save(str(self.archive.id), io.BytesIO(out))
         super(Post, self).save(*args, **kwargs)
