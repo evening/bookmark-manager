@@ -99,7 +99,7 @@ function confirm_destroy(id) {
 }
 
 function edit_bookmark(id) {
-    
+
     bookmark = document.getElementById(id)
     c = bookmark.children
     edit_menu = document.createElement("div")
@@ -147,19 +147,25 @@ function edit_bookmark(id) {
     }
     bookmark.appendChild(edit_menu);
 
-    cancel.onclick = function () {
+    cancel.onclick = function (id) {
         clear_edit_menu(id);
     }
-
     submit.onclick = function () {
+        d = get_form_data(id)
         form_data = {
-            "url": url.value,
-            "title": title.value,
+            "url": d[0],
+            "title": d[1]
         }
         update_bookmark(id, form_data);
         clear_edit_menu(id);
 
     }
+}
+
+function get_form_data(id) {
+    url = document.getElementById(id).querySelector("input[name=url]").value
+    title = document.getElementById(id).querySelector("input[name=title]").value
+    return [url, title]
 }
 
 function clear_edit_menu(id) {
