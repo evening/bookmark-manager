@@ -3,7 +3,7 @@ import subprocess
 import sys
 import uuid
 from urllib.parse import urlparse
-
+import threading
 import requests
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import AbstractUser
@@ -62,6 +62,12 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} | {self.url}"
+
+    def queue_download(self, *args, **kwargs):
+        t = threading.Thread(target=self.download_site, args=args, kwargs=kwargs)
+        t.setDaemon(True)
+        t.start()
+        return
 
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith

@@ -99,7 +99,7 @@ def autoadd(request):
     to_archive = r.pop("archive", None)
     p = Post.objects.create(**r, author=request.user)
     if to_archive:
-        p.download_site()
+        p.queue_download()
     return HttpResponse(status=200)
 
 
@@ -183,11 +183,11 @@ class Add(LoginRequiredMixin, generic.CreateView):
     form_class = AddPostForm
 
     def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.author = self.request.user
-        self.object.save()
+        self.p_obj = form.save(commit=False)
+        self.p_obj.author = self.request.user
+        self.p_obj.save()
         if self.request.POST.get("archive"):
-            self.object.download_site()
+            self.p_obj.queue_download()
         return redirect("index")
 
     def get_context_data(self, **kwargs):
