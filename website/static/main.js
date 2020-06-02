@@ -145,11 +145,13 @@ function edit_bookmark(id) {
     for (i = 0; i < c.length; i++) {
         c[i].style.display = "none";
     }
+
     bookmark.appendChild(edit_menu);
 
-    cancel.onclick = function (id) {
+    cancel.onclick = function () {
         clear_edit_menu(id);
     }
+
     submit.onclick = function () {
         d = get_form_data(id)
         form_data = {
@@ -158,7 +160,6 @@ function edit_bookmark(id) {
         }
         update_bookmark(id, form_data);
         clear_edit_menu(id);
-
     }
 }
 
