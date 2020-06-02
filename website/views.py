@@ -1,20 +1,21 @@
-from django.shortcuts import redirect
-from django.views import generic
-from website.models import Post, Account, Archive
-from django.http import HttpResponse
+import copy
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import SignUpForm, AddPostForm, EditProfileForm
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
 from django.contrib.auth.views import (
-    PasswordChangeView,
-    PasswordChangeDoneView,
     LoginView,
+    PasswordChangeDoneView,
+    PasswordChangeView,
 )
 from django.db.models import Q
-import json
 from django.forms.models import model_to_dict
-import copy
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views import generic
+
+from website.forms import AddPostForm, EditProfileForm, SignUpForm
+from website.models import Archive, Post
 
 website_title = "Bookmark Manager :: "
 

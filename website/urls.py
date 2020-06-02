@@ -1,8 +1,7 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
-from . import views
-from django.conf.urls import include
+from django.urls import path
 
+from website import views
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),

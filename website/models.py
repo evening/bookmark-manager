@@ -1,13 +1,13 @@
-from django.db import models
-import requests
-from django.contrib.auth.models import User
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
-from django.contrib.auth.models import AbstractUser
+import io
 import subprocess
 import sys
 import uuid
-import io
+from urllib.parse import urlparse
+
+import requests
+from bs4 import BeautifulSoup
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 def upload_to(instance, filename):
@@ -66,14 +66,15 @@ class Post(models.Model):
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith
         res = requests.get(self.url)
+        if sys.getsizeof(res.content) > 25_000_000:  # don't continue if file too large
+            return
         content_type = res.headers["content-type"]
         if "text/html" in content_type:  # if it's a website, include css in html file
             out = subprocess.check_output(f"monolith {self.url} -j --silent")
-            if sys.getsizeof(out) < 25_000_000:
-                tf = io.BytesIO(out)
+            if sys.getsizeof(out) > 25_000_000:  # in case too large with css/images
+                return
         else:
-            if sys.getsizeof(res.content) < 25_000_000:
-                tf = io.BytesIO(res.content)
+            out = res.content
         self.archive = Archive.objects.create(content_type=content_type)
-        self.archive.content.save(str(self.archive.id), tf)
+        self.archive.content.save(str(self.archive.id), io.BytesIO(out))
         super(Post, self).save(*args, **kwargs)
