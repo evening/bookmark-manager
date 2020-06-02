@@ -98,3 +98,9 @@ a.destroy-confirm {
 .footer {
     text-align: center;
 }
+
+
+.edit-menu input {
+    margin: 3px;
+    border: 1px solid #ddd;
+}

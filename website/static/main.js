@@ -99,6 +99,7 @@ function confirm_destroy(id) {
 }
 
 function edit_bookmark(id) {
+    
     bookmark = document.getElementById(id)
     c = bookmark.children
     edit_menu = document.createElement("div")
@@ -116,7 +117,6 @@ function edit_bookmark(id) {
     // id_hidden.value = id
     // id_hidden.type = "hidden"
 
-    br = document.createElement("br");
     title = document.createElement("input")
     title.name = "title"
     title.value = bookmark.querySelector(".title").innerText
@@ -135,8 +135,10 @@ function edit_bookmark(id) {
     // edit_menu.appendChild(csrf);
     // edit_menu.appendChild(id_hidden);
     edit_menu.appendChild(title);
-    edit_menu.appendChild(br)
+    edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(url);
+    edit_menu.appendChild(document.createElement("br"))
+
     edit_menu.appendChild(submit);
     edit_menu.appendChild(cancel);
 
