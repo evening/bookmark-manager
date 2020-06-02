@@ -1,12 +1,17 @@
-from django.db import models
-import requests
-from django.contrib.auth.models import User
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
-from django.contrib.auth.models import AbstractUser
+import io
 import subprocess
 import sys
 import uuid
+from urllib.parse import urlparse
+
+import requests
+from bs4 import BeautifulSoup
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+
+def upload_to(instance, filename):
+    return f"archives/{instance.website_archive.author.id}/{filename}"
 
 
 class Account(AbstractUser):
@@ -19,10 +24,15 @@ class Account(AbstractUser):
 class Archive(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateTimeField(auto_now=True)
-    content = models.TextField(blank=True)
+    content = models.FileField(upload_to=upload_to)
+    content_type = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self):
         return f"{self.date} | {self.website_archive}"
+
+    def delete(self, *args, **kwargs):
+        self.content.delete()
+        super(Archive, self).delete(*args, **kwargs)
 
 
 class Post(models.Model):
@@ -55,7 +65,16 @@ class Post(models.Model):
 
     def download_site(self, *args, **kwargs):
         # https://github.com/Y2Z/monolith
-        out = subprocess.check_output(f"monolith {self.url} -j")
-        if sys.getsizeof(out) < 25_000_000:
-            self.archive = Archive.objects.create(content=out.decode("utf-8"))
-            super(Post, self).save(*args, **kwargs)
+        res = requests.get(self.url)
+        if sys.getsizeof(res.content) > 25_000_000:  # don't continue if file too large
+            return
+        content_type = res.headers["content-type"]
+        if "text/html" in content_type:  # if it's a website, include css in html file
+            out = subprocess.check_output(f"monolith {self.url} -j --silent")
+            if sys.getsizeof(out) > 25_000_000:  # in case too large with css/images
+                return
+        else:
+            out = res.content
+        self.archive = Archive.objects.create(content_type=content_type)
+        self.archive.content.save(str(self.archive.id), io.BytesIO(out))
+        super(Post, self).save(*args, **kwargs)

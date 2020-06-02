@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Post, Archive
-from django.contrib.auth.models import User
+
+from .models import Archive, Post
 
 # Register your models here.
 

@@ -1,9 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth.models import User
-from .models import Account
+from django.contrib.auth.forms import UserCreationForm
 
-from .models import Post
+from website.models import Account, Post
 
 
 class SignUpForm(UserCreationForm):
