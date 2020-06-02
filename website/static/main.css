@@ -102,5 +102,8 @@ a.destroy-confirm {
 
 .edit-menu input {
     margin: 3px;
+}
+
+input {
     border: 1px solid #ddd;
 }
