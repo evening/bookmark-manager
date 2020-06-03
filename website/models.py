@@ -1,9 +1,10 @@
 import io
 import subprocess
 import sys
+import threading
 import uuid
 from urllib.parse import urlparse
-import threading
+
 import requests
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import AbstractUser

@@ -2,21 +2,17 @@ import copy
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import (
-    LoginView,
-    PasswordChangeDoneView,
-    PasswordChangeView,
-)
+from django.contrib.auth.views import (LoginView, PasswordChangeDoneView,
+                                       PasswordChangeView)
 from django.db.models import Q
 from django.forms.models import model_to_dict
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-from django.http import Http404
 
 from website.forms import AddPostForm, EditProfileForm, SignUpForm
-from website.models import Archive, Post, Account
+from website.models import Account, Archive, Post
 
 website_title = "Bookmark Manager :: "
 
@@ -88,7 +84,6 @@ def fav(request):
     return HttpResponse(status=200)
 
 
-
 class LoginView(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
@@ -131,21 +126,23 @@ class ProfileView(generic.ListView):
     paginate_by = 20
 
     def dispatch(self, request, *args, **kwargs):
-        if not self.kwargs.get("username"):
-            if request.user.is_authenticated:
-                return redirect("profile", username=request.user)
+        if self.kwargs.get("username"):
+            return super(ProfileView, self).dispatch(request, *args, **kwargs)
+        if not request.user.is_authenticated:
             return redirect("login")
-
-        return super(ProfileView, self).dispatch(request, *args, **kwargs)
+        return redirect("profile", username=request.user)
 
     def get_queryset(self):
         try:
             user = Account.objects.get(username=self.kwargs.get("username"))
         except Account.DoesNotExist:
             raise Http404
-        return Post.objects.filter(author=user).filter(
-                    Q(author__public=True) | Q(author=self.request.user)
-                    ).order_by("-date")
+        ret = Post.objects.filter(author=user)
+        if self.request.user.is_authenticated:
+            ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
+        else:
+            ret = ret.filter(author__public=True)
+        return ret.order_by("-date")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -154,7 +151,6 @@ class ProfileView(generic.ListView):
         return data
 
 
-# TODO: search in other profiles
 class SearchView(generic.ListView):
     template_name = "search.html"
     model = Post
@@ -168,22 +164,22 @@ class SearchView(generic.ListView):
             raise Http404
         q = self.request.GET.get("q")
         if q:
-            return (
-                Post.objects.filter(author=user).filter(
-                    Q(author__public=True) | Q(author=self.request.user)
-                    )
-                .filter(
-                    Q(title__icontains=q)
-                    | Q(url__icontains=q)
-                    | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
-                )
-                .order_by("-date")
-            )
+            ret = Post.objects.filter(author=user)
+            if self.request.user.is_authenticated:
+                ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
+            else:
+                ret = ret.filter(author__public=True)
+            return ret.filter(
+                Q(title__icontains=q)
+                | Q(url__icontains=q)
+                | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
+            ).order_by("-date")
+
         return Post.objects.none()
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        title = website_title + "Searching " + self.request.GET.get("q","")
+        title = website_title + "Searching " + self.request.GET.get("q", "")
         data["title"] = title
         return data
 
