@@ -23,9 +23,15 @@ website_title = "Bookmark Manager :: "
 
 def delete(request):
     post_id = request.POST.get("id")
-    query = Post.objects.get(id=post_id)
-    if query.author == request.user:
-        query.delete()
+    try:
+        p = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
+    p.delete()
     return HttpResponse(status=200)
 
 
@@ -41,7 +47,14 @@ def view_archive(request, uuid):
 
 def edit(request):
     r = request.POST
-    p = Post.objects.get(id=r.get("id"))
+    try:
+        p = Post.objects.get(id=r.get("id"))
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
     to_delete = None
     if (
         p.archive and r.get("url") != p.url
@@ -62,11 +75,18 @@ def edit(request):
 
 def fav(request):
     post_id = request.POST.get("id")
-    query = Post.objects.get(id=post_id)
-    if query.author == request.user:
-        query.fav ^= True
-        query.save()
+    try:
+        p = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
+    p.fav ^= True
+    p.save()
     return HttpResponse(status=200)
+
 
 
 class LoginView(LoginView):

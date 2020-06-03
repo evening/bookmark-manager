@@ -49,7 +49,7 @@ function toggle_fav(id) {
                 fav.innerHTML = "fav";
             }
         } else {
-            alert(`${response.status}: Error toggling favorite.`);
+            alert(`${response.status}: ${response.responseText}`);
         }
     }
 }
@@ -93,7 +93,7 @@ function confirm_destroy(id) {
         if (response.status == 200) {
             document.getElementById(id).remove();
         } else {
-            alert(`${response.status}: Error destroying`);
+            alert(`${response.status}: ${response.responseText}`);
         }
     }
 }
@@ -188,6 +188,12 @@ function update_bookmark(id) {
         if (response.status == 200) {
             bookmark = document.getElementById(id);
             updated_data = JSON.parse(response.responseText);
+            /* archive gets destroyed if url updated */
+            if(bookmark.querySelector(".url").href !== updated_data["url"]) {
+                if(bookmark.contains(bookmark.querySelector(".archive"))) {
+                    bookmark.querySelector(".archive").remove()
+                }
+            }
             bookmark.querySelector(".title").innerText = updated_data["title"]
             bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
             bookmark.querySelector(".title").href = updated_data["url"]

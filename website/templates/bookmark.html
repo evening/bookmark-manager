@@ -6,10 +6,10 @@
     <a class="title" href="{{post.url}}">{{post.title}}</a>
     {% if post.archive %}
         {% if post.archive.content  %}
-        <a href="{% url 'archive' post.archive.id %}" title="{{post.archive.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
+        <a class="archive" href="{% url 'archive' post.archive.id %}" title="{{post.archive.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
         {% endif %}
         {% if not post.archive.content  %}
-        <a title="pending archive">◷</a>
+        <a class="archive" title="pending archive">◷</a>
         {% endif %}
     {% endif %}
     <br>
