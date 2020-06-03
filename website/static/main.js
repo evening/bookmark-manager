@@ -42,7 +42,7 @@ function toggle_fav(id) {
         if (response.readyState == 4 && response.status == 200) {
             bookmark = document.getElementById(id);
             bookmark.classList.toggle("faved");
-            fav = bookmark.getElementsByClassName("fav")[0];
+            fav = bookmark.querySelector(".fav");
             if (fav.innerHTML == "fav") {
                 fav.innerHTML = "unfav";
             } else if (fav.innerHTML == "unfav") {
@@ -78,13 +78,13 @@ function delete_bookmark(id) {
     elem.appendChild(document.createTextNode("   /   "));
     elem.appendChild(destroy);
     bookmark.appendChild(elem);
-    bookmark.getElementsByClassName("delete")[0].style.display = "none";
+    bookmark.querySelector(".delete").style.display = "none";
 }
 
 function cancel_delete(id) {
     div = document.getElementById(id);
-    div.getElementsByClassName("toggle-menu")[0].remove();
-    div.getElementsByClassName("delete")[0].style.display = "inline";
+    div.querySelector(".toggle-menu").remove();
+    div.querySelector(".delete").style.display = "inline";
 }
 
 function confirm_destroy(id) {

@@ -1,9 +1,10 @@
 import io
 import subprocess
 import sys
+import threading
 import uuid
 from urllib.parse import urlparse
-import threading
+
 import requests
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import AbstractUser
@@ -19,6 +20,7 @@ class Account(AbstractUser):
     email = models.EmailField(db_index=True, unique=True, blank=False)
     first_name = None
     last_name = None
+    public = models.BooleanField(default=False)
 
 
 class Archive(models.Model):

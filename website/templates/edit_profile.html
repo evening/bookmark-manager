@@ -4,7 +4,7 @@
 <form method="post" action="">
     <table>
         {% csrf_token %}
-        {{ form.as_table }}
+        {{ form.as_p }}
     </table>
     <button type="submit">Edit Profile</button>
 </form>
