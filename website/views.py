@@ -13,18 +13,25 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from django.http import Http404
 
 from website.forms import AddPostForm, EditProfileForm, SignUpForm
-from website.models import Archive, Post
+from website.models import Archive, Post, Account
 
 website_title = "Bookmark Manager :: "
 
 
 def delete(request):
     post_id = request.POST.get("id")
-    query = Post.objects.get(id=post_id)
-    if query.author == request.user:
-        query.delete()
+    try:
+        p = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
+    p.delete()
     return HttpResponse(status=200)
 
 
@@ -40,7 +47,14 @@ def view_archive(request, uuid):
 
 def edit(request):
     r = request.POST
-    p = Post.objects.get(id=r.get("id"))
+    try:
+        p = Post.objects.get(id=r.get("id"))
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
     to_delete = None
     if (
         p.archive and r.get("url") != p.url
@@ -61,11 +75,18 @@ def edit(request):
 
 def fav(request):
     post_id = request.POST.get("id")
-    query = Post.objects.get(id=post_id)
-    if query.author == request.user:
-        query.fav ^= True
-        query.save()
+    try:
+        p = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        raise Http404
+
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+
+    p.fav ^= True
+    p.save()
     return HttpResponse(status=200)
+
 
 
 class LoginView(LoginView):
@@ -103,14 +124,26 @@ def autoadd(request):
     return HttpResponse(status=200)
 
 
-class IndexView(LoginRequiredMixin, generic.ListView):
+class ProfileView(generic.ListView):
     template_name = "index.html"
     model = Post
     context_object_name = "posts"
     paginate_by = 20
 
+    def dispatch(self, request, *args, **kwargs):
+        if not self.kwargs.get("username"):
+            if request.user.is_authenticated:
+                return redirect("profile", username=request.user)
+            return redirect("login")
+
+        return super(ProfileView, self).dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
-        return Post.objects.filter(author=self.request.user).order_by("-date")
+        try:
+            user = Account.objects.get(username=self.kwargs.get("username"))
+        except Account.DoesNotExist:
+            raise Http404
+        return Post.objects.filter(author=user).order_by("-date")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -119,6 +152,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return data
 
 
+# TODO: search in other profiles
 class SearchView(generic.ListView):
     template_name = "search.html"
     model = Post
@@ -126,10 +160,14 @@ class SearchView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
+        try:
+            user = Account.objects.get(username=self.kwargs.get("username"))
+        except Account.DoesNotExist:
+            raise Http404
         q = self.request.GET.get("q")
         if q:
             return (
-                Post.objects.filter(author=self.request.user)
+                Post.objects.filter(author=user)
                 .filter(
                     Q(title__icontains=q)
                     | Q(url__icontains=q)
@@ -141,7 +179,7 @@ class SearchView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        title = website_title + "Searching " + self.request.GET.get("q")
+        title = website_title + "Searching " + self.request.GET.get("q","")
         data["title"] = title
         return data
 
