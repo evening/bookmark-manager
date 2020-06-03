@@ -1,0 +1,25 @@
+{% if post.fav %}
+<div class="bookmark faved" id="{{post.id}}">
+    {% else %}
+<div class="bookmark" id="{{post.id}}">
+    {% endif %}
+    <a class="title" href="{{post.url}}">{{post.title}}</a>
+    {% if post.archive %}
+        {% if post.archive.content  %}
+        <a href="{% url 'archive' post.archive.id %}" title="{{post.archive.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
+        {% endif %}
+        {% if not post.archive.content  %}
+        <a title="pending archive">◷</a>
+        {% endif %}
+    {% endif %}
+    <br>
+    <a class="url" href="{{post.url}}">{{post.url | truncatechars:70}}</a> <br> 
+    <a class="time" href="#" title="{{post.date|date:"o.m.d   H.i.s" | lower}}">{{post.date|date:"F Y" | lower}}</a>
+    {% if post.fav %}
+    <a class="fav" onclick="toggle_fav({{post.id}});return false;" href="#">unfav</a>
+    {% else %}
+    <a class="fav" onclick="toggle_fav({{post.id}});return false;" href="#">fav</a>
+    {% endif %}
+    <a class="edit" onclick="edit_bookmark({{post.id}});return false;" href="#">edit</a>
+    <a class="delete" onclick="delete_bookmark({{post.id}});return false;" href="#">delete</a>
+</div>

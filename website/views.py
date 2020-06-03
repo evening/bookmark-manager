@@ -13,9 +13,10 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from django.http import Http404
 
 from website.forms import AddPostForm, EditProfileForm, SignUpForm
-from website.models import Archive, Post
+from website.models import Archive, Post, Account
 
 website_title = "Bookmark Manager :: "
 
@@ -103,14 +104,26 @@ def autoadd(request):
     return HttpResponse(status=200)
 
 
-class IndexView(LoginRequiredMixin, generic.ListView):
+class ProfileView(generic.ListView):
     template_name = "index.html"
     model = Post
     context_object_name = "posts"
     paginate_by = 20
 
+    def dispatch(self, request, *args, **kwargs):
+        if not self.kwargs.get("username"):
+            if request.user.is_authenticated:
+                return redirect("profile", username=request.user)
+            return redirect("login")
+
+        return super(ProfileView, self).dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
-        return Post.objects.filter(author=self.request.user).order_by("-date")
+        try:
+            user = Account.objects.get(username=self.kwargs.get("username"))
+        except Account.DoesNotExist:
+            raise Http404
+        return Post.objects.filter(author=user).order_by("-date")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -119,6 +132,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return data
 
 
+# TODO: search in other profiles
 class SearchView(generic.ListView):
     template_name = "search.html"
     model = Post
