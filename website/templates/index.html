@@ -2,10 +2,13 @@
 {% block content %}
 <div id="main">
     <div id="bookmarks">
-        {% include "bookmarks.html" %}
+        {%if request.GET.q %}
+            <p>Searched for "<strong>{{request.GET.q}}</strong>" in your bookmarks. Found {{page_obj.paginator.count}} {{page_obj.paginator.count|pluralize:"result,results"}}.</p>
+        {%endif%}
+        {% include "bookmarks.html" %}    
     </div>
     <div id="search">
-        <form action="{% url 'search' username=view.kwargs.username %}">
+        <form action="{% url 'profile' username=view.kwargs.username %}">
             <input name="q">
             <input type="submit">
         </form>

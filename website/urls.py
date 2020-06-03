@@ -20,7 +20,6 @@ urlpatterns = [
     path("fav/", views.fav, name="fav"),
     path("edit/", views.edit, name="edit"),
     path("archive/<uuid:uuid>", views.view_archive, name="archive"),
-    path("search/u:<str:username>", views.SearchView.as_view(), name="search"),
     path(
         "account/password", views.PasswordChangeView.as_view(), name="password_change"
     ),

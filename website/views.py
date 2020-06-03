@@ -142,6 +142,14 @@ class ProfileView(generic.ListView):
             ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
         else:
             ret = ret.filter(author__public=True)
+
+        q = self.request.GET.get("q", None)
+        if q:
+            ret = ret.filter(
+                Q(title__icontains=q)
+                | Q(url__icontains=q)
+                | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
+            )
         return ret.order_by("-date")
 
     def get_context_data(self, **kwargs):
@@ -151,35 +159,12 @@ class ProfileView(generic.ListView):
         return data
 
 
-class SearchView(generic.ListView):
-    template_name = "search.html"
-    model = Post
-    context_object_name = "posts"
-    paginate_by = 20
-
-    def get_queryset(self):
-        try:
-            user = Account.objects.get(username=self.kwargs.get("username"))
-        except Account.DoesNotExist:
-            raise Http404
-        q = self.request.GET.get("q")
-        if q:
-            ret = Post.objects.filter(author=user)
-            if self.request.user.is_authenticated:
-                ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
-            else:
-                ret = ret.filter(author__public=True)
-            return ret.filter(
-                Q(title__icontains=q)
-                | Q(url__icontains=q)
-                | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
-            ).order_by("-date")
-
-        return Post.objects.none()
-
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        title = website_title + "Searching " + self.request.GET.get("q", "")
+        title = website_title
+        q = self.request.GET.get("q")
+        if q:
+            title = title + "Searching " + self.request.GET.get("q", "")
         data["title"] = title
         return data
 
