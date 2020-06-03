@@ -143,7 +143,9 @@ class ProfileView(generic.ListView):
             user = Account.objects.get(username=self.kwargs.get("username"))
         except Account.DoesNotExist:
             raise Http404
-        return Post.objects.filter(author=user).filter(author__public=True).order_by("-date")
+        return Post.objects.filter(author=user).filter(
+                    Q(author__public=True) | Q(author=self.request.user)
+                    ).order_by("-date")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -167,7 +169,9 @@ class SearchView(generic.ListView):
         q = self.request.GET.get("q")
         if q:
             return (
-                Post.objects.filter(author=user).filter(author__public=True)
+                Post.objects.filter(author=user).filter(
+                    Q(author__public=True) | Q(author=self.request.user)
+                    )
                 .filter(
                     Q(title__icontains=q)
                     | Q(url__icontains=q)

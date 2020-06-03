@@ -6,19 +6,17 @@ import website.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('website', '0002_auto_20200601_1939'),
-    ]
+    dependencies = [("website", "0002_auto_20200601_1939")]
 
     operations = [
         migrations.AddField(
-            model_name='account',
-            name='public',
+            model_name="account",
+            name="public",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='archive',
-            name='content',
+            model_name="archive",
+            name="content",
             field=models.FileField(upload_to=website.models.upload_to),
         ),
     ]

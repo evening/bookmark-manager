@@ -32,10 +32,10 @@ class AddPostForm(forms.ModelForm):
 
 class EditProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+
         super(EditProfileForm, self).__init__(*args, **kwargs)
-        for fieldname in ["username", "email"]:
-            self.fields[fieldname].help_text = None
+        self.fields["public"].label = "Enable public profile"
 
     class Meta:
         model = Account
-        fields = ("username", "email")
+        fields = ("username", "email", "public")
