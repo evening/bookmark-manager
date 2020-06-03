@@ -5,7 +5,7 @@ from website import views
 
 urlpatterns = [
     path("", views.ProfileView.as_view(), name="index"),
-    path(r"u:<str:username>", views.ProfileView.as_view(), name="profile"),
+    path("u:<str:username>", views.ProfileView.as_view(), name="profile"),
     path("signup/", views.SignUp.as_view(), name="signup"),
     path("login/", views.LoginView.as_view(), name="login"),
     path(
@@ -20,7 +20,7 @@ urlpatterns = [
     path("fav/", views.fav, name="fav"),
     path("edit/", views.edit, name="edit"),
     path("archive/<uuid:uuid>", views.view_archive, name="archive"),
-    path("search/", views.SearchView.as_view(), name="search"),
+    path("search/u:<str:username>", views.SearchView.as_view(), name="search"),
     path(
         "account/password", views.PasswordChangeView.as_view(), name="password_change"
     ),

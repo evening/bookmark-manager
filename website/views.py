@@ -160,10 +160,14 @@ class SearchView(generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
+        try:
+            user = Account.objects.get(username=self.kwargs.get("username"))
+        except Account.DoesNotExist:
+            raise Http404
         q = self.request.GET.get("q")
         if q:
             return (
-                Post.objects.filter(author=self.request.user)
+                Post.objects.filter(author=user)
                 .filter(
                     Q(title__icontains=q)
                     | Q(url__icontains=q)
@@ -175,7 +179,7 @@ class SearchView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        title = website_title + "Searching " + self.request.GET.get("q")
+        title = website_title + "Searching " + self.request.GET.get("q","")
         data["title"] = title
         return data
 

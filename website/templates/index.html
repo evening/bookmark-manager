@@ -5,7 +5,7 @@
         {% include "bookmarks.html" %}
     </div>
     <div id="search">
-        <form action="{% url 'search' %}">
+        <form action="{% url 'search' username=view.kwargs.username %}">
             <input name="q">
             <input type="submit">
         </form>
