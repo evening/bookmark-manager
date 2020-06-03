@@ -19,6 +19,7 @@ class Account(AbstractUser):
     email = models.EmailField(db_index=True, unique=True, blank=False)
     first_name = None
     last_name = None
+    public = models.BooleanField(default=False)
 
 
 class Archive(models.Model):
