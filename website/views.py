@@ -2,8 +2,11 @@ import copy
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import (LoginView, PasswordChangeDoneView,
-                                       PasswordChangeView)
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeDoneView,
+    PasswordChangeView,
+)
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponse
@@ -155,17 +158,17 @@ class ProfileView(generic.ListView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title
-        data["title"] = title
-        return data
-
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        title = website_title
         q = self.request.GET.get("q")
         if q:
             title = title + "Searching " + self.request.GET.get("q", "")
         data["title"] = title
+        return data
+
+
+class FavoriteView(ProfileView):
+    def get_queryset(self):
+        data = super().get_queryset()
+        data = data.filter(fav=True)
         return data
 
 

@@ -59,7 +59,7 @@ class Post(models.Model):
                     self.url = "http://" + self.url
                 self.title = BeautifulSoup(requests.get(self.url).text).title.text
             except:
-                pass
+                self.title = self.url
         super(Post, self).save(*args, **kwargs)
 
     def __str__(self):

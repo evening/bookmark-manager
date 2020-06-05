@@ -6,6 +6,9 @@ from website import views
 urlpatterns = [
     path("", views.ProfileView.as_view(), name="index"),
     path("u:<str:username>", views.ProfileView.as_view(), name="profile"),
+    path(
+        "u:<str:username>/fav/", views.FavoriteView.as_view(), name="profile_favorite"
+    ),
     path("signup/", views.SignUp.as_view(), name="signup"),
     path("login/", views.LoginView.as_view(), name="login"),
     path(
