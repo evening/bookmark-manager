@@ -2,6 +2,11 @@
 {% block content %}
 <div id="main">
     <div id="bookmarks">
+        <div id="shortcuts">
+            <a>{{view.kwargs.username}} ({{count}})</a> ‧
+            <a href="{% url 'profile' username=view.kwargs.username %}">all</a> ‧
+            <a href="{% url 'profile_favorite' username=view.kwargs.username %}">favorites</a>
+        </div>
         {%if request.GET.q %}
             <p>Searched for "<strong>{{request.GET.q}}</strong>" in your bookmarks. Found {{page_obj.paginator.count}} {{page_obj.paginator.count|pluralize:"result,results"}}.</p>
         {%endif%}

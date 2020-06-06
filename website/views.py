@@ -182,6 +182,8 @@ class ProfileView(generic.ListView):
         if q:
             title = title + "Searching " + self.request.GET.get("q", "")
         data["title"] = title
+        # if i decide to make specific urls private instead of accounts, this will leak total number 
+        data["count"] = Post.objects.filter(author__username=self.kwargs.get("username")).count()
         return data
 
 
