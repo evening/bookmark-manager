@@ -1,57 +1,53 @@
+html {
+    overflow-y: scroll;
+}
+
 body {
     font-size: 13px;
     font-family: helvetica, sans-serif;
 }
 
-
-#main {
-    display: flex;
-    flex-wrap: wrap-reverse;
-    justify-content: space-around;
+#content {
     max-width: 1284px;
     margin: 1rem auto;
 }
 
-#shortcuts {
-    text-align: center;
+#profile {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: space-around;
 }
-
 
 #bookmarks {
     flex-direction: column;
     display: flex;
-    flex-grow: 1;
     flex-wrap: wrap;
-    flex: 10 0 0;
+    flex: 5 0 0;
+}
+
+#sidebar {
+    flex: 2 0 0;
 }
 
 #search {
-    flex-grow: 1;
-}
-
-#shortcuts {
-    padding-bottom: 20px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
 
 #search form {
     text-align: right;
 }
 
-a {
-    text-decoration: none;
-    color: #888888;
+#shortcuts {
+    text-align: center;
+    padding-bottom: 20px;
 }
-
-a:visited {
-    color: #888888
-}
-
 
 .bookmark {
     margin-bottom: 1.3em;
     padding: 3px;
 }
-
 
 .bookmark .title {
     font-size: 110%;
@@ -76,6 +72,32 @@ a:visited {
     justify-content: space-between;
 }
 
+#double {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#left {
+    flex: 10 0 0;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+#right {
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex-basis: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #888888;
+}
+
+a:visited {
+    color: #888888
+}
 
 #top-menu a {
     padding-left: 1em;
@@ -93,7 +115,6 @@ a:visited {
     outline: dashed 2px #777777;
 }
 
-
 a.cancel-confirm {
     color: #11a;
 }
@@ -110,11 +131,19 @@ a.destroy-confirm {
     text-align: center;
 }
 
-
 .edit-menu input {
     margin: 3px;
 }
 
 input {
     border: 1px solid #ddd;
+}
+
+.edit-menu input {
+    font-size: 90%;
+    padding: 3px;
+}
+
+#tags {
+    padding: 20px;
 }

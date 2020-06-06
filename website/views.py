@@ -158,7 +158,7 @@ class ProfileView(generic.ListView):
             user = Account.objects.get(username=self.kwargs.get("username"))
         except Account.DoesNotExist:
             raise Http404
-        if not user.is_active: # don't show deleted accounts
+        if not user.is_active:  # don't show deleted accounts
             raise Http404
         ret = Post.objects.filter(author=user)
         if self.request.user.is_authenticated:
@@ -182,8 +182,10 @@ class ProfileView(generic.ListView):
         if q:
             title = title + "Searching " + self.request.GET.get("q", "")
         data["title"] = title
-        # if i decide to make specific urls private instead of accounts, this will leak total number 
-        data["count"] = Post.objects.filter(author__username=self.kwargs.get("username")).count()
+        # if i decide to make specific urls private instead of accounts, this will leak total number
+        data["count"] = Post.objects.filter(
+            author__username=self.kwargs.get("username")
+        ).count()
         return data
 
 
@@ -226,6 +228,9 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
         data["title"] = title
         data["total_bookmarks"] = posts.count()
         data["faved_bookmarks"] = posts.filter(fav=True).count()
+        data["last_added"] = posts.filter(fav=True).latest("date").date
+        data["date_joined"] = self.request.user.date_joined
+        data["last_login"] = self.request.user.last_login
         return data
 
 
