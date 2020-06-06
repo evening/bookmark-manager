@@ -1,5 +1,6 @@
 import copy
 import json
+import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
@@ -13,9 +14,8 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-
 from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm
-from website.models import Account, Archive, Post
+from website.models import Account, Archive, Post, Tag
 
 website_title = "Bookmark Manager :: "
 
@@ -186,6 +186,7 @@ class ProfileView(generic.ListView):
         data["count"] = Post.objects.filter(
             author__username=self.kwargs.get("username")
         ).count()
+        data["tags"] = Tag.objects.filter(tag__author=self.request.user)
         return data
 
 
@@ -244,6 +245,10 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj.save()
         if self.request.POST.get("archive"):
             self.p_obj.queue_download()
+        tags = form.cleaned_data["tags"].replace(","," ").split()
+        for tag in tags:
+            t,c = Tag.objects.get_or_create(name=tag)
+            self.p_obj.tags.add(t)
         return redirect("index")
 
     def get_context_data(self, **kwargs):
