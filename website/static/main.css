@@ -1,6 +1,5 @@
 body {
     font-size: 13px;
-    margin-left: 20px;
     font-family: helvetica, sans-serif;
 }
 
@@ -8,27 +7,42 @@ body {
 #main {
     display: flex;
     flex-wrap: wrap-reverse;
-    justify-content: space-evenly;
+    justify-content: space-around;
+    max-width: 1284px;
+    margin: 1rem auto;
 }
 
 
 #bookmarks {
     flex-direction: column;
     display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex: 10 0 0;
+}
+
+#search {
+    flex-grow: 1;
 
 }
 
-a { 
-    text-decoration:none;
-    color:#888888; /*1111aa */
+#search form {
+    text-align: right;
 }
 
-a:visited { color:#888888 }
+a {
+    text-decoration: none;
+    color: #888888;
+}
+
+a:visited {
+    color: #888888
+}
 
 
 .bookmark {
     margin-bottom: 1.3em;
-    padding: 3px; 
+    padding: 3px;
 }
 
 
