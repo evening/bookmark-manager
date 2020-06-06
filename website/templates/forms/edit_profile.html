@@ -8,4 +8,8 @@
 </form>
 <p>Change password <a href="{% url 'password_change' %}">here</a>.</p>
 <p>Delete account <a href="{% url 'account_delete' %}">here</a>.</p>
+
+<h4>stats</h4>
+<p>{{total_bookmarks}} bookmarks. {{faved_bookmarks}} favorited bookmarks.</p>
+
 {% endblock %}

@@ -218,7 +218,10 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Change account information"
+        posts = Post.objects.filter(author=self.request.user)
         data["title"] = title
+        data["total_bookmarks"] = posts.count()
+        data["faved_bookmarks"] = posts.filter(fav=True).count()
         return data
 
 
