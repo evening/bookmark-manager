@@ -158,6 +158,8 @@ class ProfileView(generic.ListView):
             user = Account.objects.get(username=self.kwargs.get("username"))
         except Account.DoesNotExist:
             raise Http404
+        if not user.is_active: # don't show deleted accounts
+            raise Http404
         ret = Post.objects.filter(author=user)
         if self.request.user.is_authenticated:
             ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
