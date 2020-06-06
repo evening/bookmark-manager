@@ -1,15 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2> Edit Profile </h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Edit Profile</button>
-</form>
-<p>Change password <a href="{% url 'password_change' %}">here</a>.</p>
-<p>Delete account <a href="{% url 'account_delete' %}">here</a>.</p>
-
-<h4>stats</h4>
-<p>{{total_bookmarks}} bookmarks. {{faved_bookmarks}} favorited bookmarks.</p>
-
+<div id="double">
+    <div id="left">
+        <h1> Edit Profile </h1>
+    
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Edit Profile</button>
+        </form>
+    </div>
+    <div id="right">
+        <h2>Stats</h2>
+        <ul>
+            <li>Joined {{date_joined|date:"M d Y"}}. Last logged in {{last_login|date:"M d Y"}}.</li>
+            <li>{{total_bookmarks}} bookmarks.</li>
+            <li>{{faved_bookmarks}} favorited bookmarks.</li>
+            <li>Most recent added {{last_added|date:"M d h:i" }}.</li>
+        </ul>
+        <br>
+        <p>Change password <a href="{% url 'password_change' %}">here</a>.</p>
+        <p>Delete account <a href="{% url 'account_delete' %}">here</a>.</p>
+    </div>
+</div>
 {% endblock %}

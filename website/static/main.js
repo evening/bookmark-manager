@@ -202,5 +202,6 @@ function update_bookmark(id) {
             alert(`${response.status}: ${response.responseText}`);
         }
     }
-
 }
+
+
