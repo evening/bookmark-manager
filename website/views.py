@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
-from website.forms import AddPostForm, EditProfileForm, SignUpForm
+from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm
 from website.models import Account, Archive, Post
 
 website_title = "Bookmark Manager :: "
@@ -109,8 +109,26 @@ class PasswordChangeView(PasswordChangeView):
         return data
 
 
-class PasswordChangeDoneView(PasswordChangeDoneView):
-    template_view = "forms/change_password.html"
+class AccountDelete(LoginRequiredMixin, generic.FormView):
+    form_class = AccountDeleteForm
+    template_name = "forms/account_delete.html"
+    success_url = reverse_lazy("account_delete")
+
+    def get_form_kwargs(self):
+        kw = super(AccountDelete, self).get_form_kwargs()
+        kw["request"] = self.request
+        return kw
+
+    def form_valid(self, form):
+        self.request.user.is_active = False
+        self.request.user.save()
+        return redirect("index")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        title = website_title + "Delete account"
+        data["title"] = title
+        return data
 
 
 def autoadd(request):

@@ -39,3 +39,22 @@ class EditProfileForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ("username", "email", "public")
+
+
+class AccountDeleteForm(forms.Form):
+    password1 = forms.CharField(widget=forms.PasswordInput(), label="Enter password")
+    password2 = forms.CharField(widget=forms.PasswordInput(), label="Confirm password")
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        super(AccountDeleteForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError("passwords do not match")
+        if not self.request.user.check_password(password2):
+            raise forms.ValidationError("invalid password")
+        return password2

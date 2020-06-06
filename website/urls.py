@@ -17,6 +17,7 @@ urlpatterns = [
         name="logout",
     ),
     path("account", views.EditProfile.as_view(), name="account"),
+    path("account/delete", views.AccountDelete.as_view(), name="account_delete"),
     path("add", views.Add.as_view(), name="add"),
     path("autoadd", views.autoadd, name="autoadd"),
     path("delete/", views.delete, name="delete"),
@@ -25,10 +26,5 @@ urlpatterns = [
     path("archive/<uuid:uuid>", views.view_archive, name="archive"),
     path(
         "account/password", views.PasswordChangeView.as_view(), name="password_change"
-    ),
-    path(
-        "account/password",
-        views.PasswordChangeDoneView.as_view(),
-        name="password_change_done",
     ),
 ]

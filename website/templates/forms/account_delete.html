@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2> Change Password </h2>
-
+<h2> Delete Account </h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit"">Change</button>
+    <button type="submit">Delete Account</button>
 </form>
 {% endblock %}
