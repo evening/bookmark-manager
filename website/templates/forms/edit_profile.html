@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Add</button>
+    <button type="submit">Edit Profile</button>
 </form>
-
-
+<p>Change password <a href="{% url 'password_change' %}">here</a>.</p>
 {% endblock %}

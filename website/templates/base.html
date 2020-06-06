@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
         {% load static %}
         <link rel="stylesheet" href="{% static 'main.css' %}">
@@ -16,7 +16,6 @@
                 {% else %}
                 <a href="{% url 'index' %}">Bookmark Manager</a>
                 {% endif %}
-
             </div>
             <div id="top-menu">
                 {% if user.is_authenticated %}
@@ -29,14 +28,12 @@
                 {% endif %}
             </div>
         </div>
-    {% block content %}
-    {% endblock %}
-    <footer class="footer">
-        <hr style="border-top:1px dotted #aaa;">
-        &lt;<a href="mailto:support@example.net">support@example.net</a>&gt;
-    </footer>
-
+        {% block content %}
+        {% endblock %}
+        <footer class="footer">
+            <hr style="border-top:1px dotted #aaa;">
+            &lt;<a href="mailto:support@example.net">support@example.net</a>&gt;
+        </footer>
     </div>
-    
 </body>
 </html>

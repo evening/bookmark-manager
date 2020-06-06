@@ -1,0 +1,11 @@
+{% block content %}
+{% if posts %}
+    {% for post in posts %}
+        {% include 'subtemplates/bookmark.html' with post=post %}
+    {% endfor %}
+    {% if page_obj.paginator.num_pages > 1 %}
+        {% include 'subtemplates/pagination.html' %}
+    {% endif %}
+{% endif %}
+{% endblock %}
+

@@ -88,7 +88,7 @@ def fav(request):
 
 
 class LoginView(LoginView):
-    template_name = "login.html"
+    template_name = "forms/login.html"
     redirect_authenticated_user = True
 
     def get_context_data(self, **kwargs):
@@ -99,7 +99,7 @@ class LoginView(LoginView):
 
 
 class PasswordChangeView(PasswordChangeView):
-    template_name = "change_password.html"
+    template_name = "forms/change_password.html"
     success_url = reverse_lazy("account")
 
     def get_context_data(self, **kwargs):
@@ -110,7 +110,7 @@ class PasswordChangeView(PasswordChangeView):
 
 
 class PasswordChangeDoneView(PasswordChangeDoneView):
-    template_view = "change_password.html"
+    template_view = "forms/change_password.html"
 
 
 def autoadd(request):
@@ -123,7 +123,7 @@ def autoadd(request):
 
 
 class ProfileView(generic.ListView):
-    template_name = "index.html"
+    template_name = "profile.html"
     model = Post
     context_object_name = "posts"
     paginate_by = 20
@@ -175,7 +175,7 @@ class FavoriteView(ProfileView):
 class SignUp(generic.CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("index")
-    template_name = "signup.html"
+    template_name = "forms/signup.html"
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -191,7 +191,7 @@ class SignUp(generic.CreateView):
 
 class EditProfile(LoginRequiredMixin, generic.UpdateView):
     form_class = EditProfileForm
-    template_name = "edit_profile.html"
+    template_name = "forms/edit_profile.html"
     success_url = reverse_lazy("account")
 
     def get_object(self, queryset=None):

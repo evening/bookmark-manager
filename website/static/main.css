@@ -4,11 +4,6 @@ body {
     font-family: helvetica, sans-serif;
 }
 
-#content {
-    margin-left: auto;
-    margin-right: auto;
-    
-}
 
 #main {
     display: flex;
@@ -16,12 +11,11 @@ body {
     justify-content: space-evenly;
 }
 
-#search {
-    padding-top: 2em;
-}
 
 #bookmarks {
     flex-direction: column;
+    display: flex;
+
 }
 
 a { 
@@ -68,10 +62,6 @@ a:visited { color:#888888 }
 
 .delete {
     color: #bb4411;
-}
-
-#bookmarks {
-    display: flex;
 }
 
 .pagination {

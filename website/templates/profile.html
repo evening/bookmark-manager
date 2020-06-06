@@ -5,15 +5,10 @@
         {%if request.GET.q %}
             <p>Searched for "<strong>{{request.GET.q}}</strong>" in your bookmarks. Found {{page_obj.paginator.count}} {{page_obj.paginator.count|pluralize:"result,results"}}.</p>
         {%endif%}
-        {% include "bookmarks.html" %}    
+        {% include "subtemplates/bookmarks.html" %}    
     </div>
     <div id="search">
-        <form action="{% url 'profile' username=view.kwargs.username %}">
-            <input name="q">
-            <input type="submit">
-        </form>
+        {% include "subtemplates/search.html" %}
     </div>
-    
 </div>
-
 {% endblock %}
