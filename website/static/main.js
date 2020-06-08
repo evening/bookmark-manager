@@ -220,11 +220,33 @@ function update_bookmark(id, form_data) {
             bookmark.querySelector(".title").innerText = updated_data["title"]
             bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
             bookmark.querySelector(".title").href = updated_data["url"]
-            bookmark.querySelector(".url").href = updated_data["url"]
+            bookmark.querySelector(".url").href = updated_data["url"];
+            while(bookmark.querySelector(".tags").firstChild) {
+                bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
+            }
+            bookmark.querySelector(".tags").appendChild(generate_new_tags(updated_data["tags"]))
+
         } else {
             alert(`${response.status}: ${response.responseText}`);
         }
     }
 }
 
+function generate_new_tags(arr) {
+    tags = document.createElement("span");
+    tags.appendChild(document.createTextNode("[ "));
+
+    arr.forEach(
+        element => {
+            console.log(element)
+            tag = document.createElement("a");
+            tag.href = window.location.href.split("#")[0] + "/t:" + element;
+            tag.innerText = element
+            tags.appendChild(tag);
+            tags.appendChild(document.createTextNode(" "));
+        }
+    )
+    tags.appendChild(document.createTextNode(" ]"));
+    return tags 
+}
 
