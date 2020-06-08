@@ -10,6 +10,10 @@
     </head>
     <body>
         <script>
+
+            function remove_suggestions(bookmark) {
+                input = bookmark.querySelector(".prediction").innerText = ""
+            }
             var tag_list = list_tags_from_string("{% for tag in tags %}{{tag.name}} {% endfor %}")
             function match_tags(bookmark) {
                 input = bookmark.querySelector("input[name='tags']").value

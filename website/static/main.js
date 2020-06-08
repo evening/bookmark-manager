@@ -135,8 +135,10 @@ function edit_bookmark(id) {
 
     tags = document.createElement("input")
     tags.name = "tags"
-    tags.onkeyup = function(){predict_input(bookmark)}
-    tags.value = parse_tags(bookmark)
+    // need to get the ID otherwise 'variable bookmark' might be overwritten?
+    tags.onkeyup = function(){predict_input(document.getElementById(id))}
+    tags.onblur = function(){remove_suggestions(document.getElementById(id))}
+    tags.value = parse_tags(document.getElementById(id))
     prediction = document.createElement("div")
     prediction.className = "prediction"
     title = document.createElement("input")
@@ -252,7 +254,6 @@ function generate_new_tags(arr) {
 
     arr.forEach(
         element => {
-            console.log(element)
             tag = document.createElement("a");
             tag.href = window.location.href.split("#")[0] + "/t:" + element;
             tag.innerText = element
