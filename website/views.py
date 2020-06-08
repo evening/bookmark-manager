@@ -249,9 +249,15 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
         title = website_title + "Change account information"
         posts = Post.objects.filter(author=self.request.user)
         data["title"] = title
-        data["total_bookmarks"] = posts.count()
-        data["faved_bookmarks"] = posts.filter(fav=True).count()
-        data["last_added"] = posts.filter(fav=True).latest("date").date
+        if posts.count() == 0:
+            data["total_bookmarks"] = 0
+            data["faved_bookmarks"] = 0
+            data["last_added"] = None
+        else:
+            data["total_bookmarks"] = posts.count() 
+            data["faved_bookmarks"] = posts.filter(fav=True).count() 
+            data["last_added"] = posts.filter(fav=True).latest("date").date
+
         data["date_joined"] = self.request.user.date_joined
         data["last_login"] = self.request.user.last_login
         return data
