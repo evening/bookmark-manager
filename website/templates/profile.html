@@ -20,7 +20,7 @@
         <div id="tags">
             <h3>tags</h3>
             {% for tag in tags %}
-                {{tag.name}}
+                <a href="{% url 'tag_view' username=view.kwargs.username tag=tag.name %}">{{tag.name}}</a>
             {% endfor %}
             </p>
         </div>
