@@ -3,43 +3,13 @@
     <head>
         {% load static %}
         <link rel="stylesheet" href="{% static 'main.css' %}">
+        <script src="{%static 'predict.js' %}"></script>
         <script src="{%static 'main.js' %}"></script>
         <link rel="shortcut icon" href="{%static 'favicon.ico' %}">
         <title>{{title}}</title>
 
     </head>
     <body>
-        <script>
-
-            function remove_suggestions(bookmark) {
-                input = bookmark.querySelector(".prediction").innerText = ""
-            }
-            var tag_list = list_tags_from_string("{% for tag in tags %}{{tag.name}} {% endfor %}")
-            function match_tags(bookmark) {
-                input = bookmark.querySelector("input[name='tags']").value
-                var reg = new RegExp("^" + input.split(/[ ,]+/).slice(-1)[0] , 'i');
-                return tag_list.filter(function(tag_prediction) {
-                    // if regex is empty, erase
-                    if(reg == "/^/i") {
-                        return
-                    }
-                    if (tag_prediction.match(reg)) {
-                        return tag_prediction;
-                    }
-                });
-            }
-            function predict_input (bookmark) {
-                var tag_results = match_tags(bookmark);
-                bookmark.querySelector(".prediction").innerHTML = tag_results.join(" ");
-            }
-        </script>
-        <style>
-            .prediction {
-                position: absolute;
-                background-color: white;
-                border: 1px solid #aaa;
-            }
-        </style>
     <div id="content">
         <div id="banner">
             
