@@ -50,7 +50,7 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     fav = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag, related_name="tag")
+    tags = models.ManyToManyField(Tag, related_name="post_tag")
     archive = models.OneToOneField(
         Archive, on_delete=models.CASCADE, null=True, related_name="website_archive"
     )

@@ -211,6 +211,8 @@ class ProfileView(generic.ListView):
         return ret.order_by("-date")
 
     def get_context_data(self, **kwargs):
+        from django.db.models import Count
+
         data = super().get_context_data(**kwargs)
         title = website_title
         q = self.request.GET.get("q")
@@ -222,15 +224,17 @@ class ProfileView(generic.ListView):
             author__username=self.kwargs.get("username")
         ).count()
         tags_sidebar = Tag.objects.filter(
-            tag__author__username=self.kwargs.get("username")
+            post_tag__author__username=self.kwargs.get("username")
         )
         if self.request.user.is_authenticated:
             tags_sidebar = tags_sidebar.filter(
-                Q(tag__author__public=True) | Q(tag__author=self.request.user)
+                Q(post_tag__author__public=True) | Q(post_tag__author=self.request.user)
             ).distinct()
         else:
-            tags_sidebar = tags_sidebar.filter(tag__author__public=True).distinct()
-        data["tags"] = tags_sidebar
+            tags_sidebar = tags_sidebar.filter(post_tag__author__public=True).distinct()
+        data["tags"] = tags_sidebar.annotate(t_count=Count("post_tag")).order_by(
+            "-t_count"
+        )  # sort by usage
         return data
 
 
