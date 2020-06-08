@@ -14,8 +14,9 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm
+from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm, AddPostForm
 from website.models import Account, Archive, Post, Tag
+from website.utils import clean_tags, create_tags
 
 website_title = "Bookmark Manager :: "
 
@@ -45,7 +46,7 @@ def view_archive(request, uuid):
 
 
 def edit(request):
-    r = request.POST
+    r = copy.deepcopy(request.POST)
     try:
         p = Post.objects.get(id=r.get("id"))
     except Post.DoesNotExist:
@@ -60,7 +61,8 @@ def edit(request):
     ):  # if changing url when there's an archive, just delete
         to_delete = p.archive
         p.archive = None
-
+    tags = r.pop("tags")
+    print(tags)
     for k, v in r.items():
         if hasattr(p, k):
             setattr(p, k, v)
@@ -68,6 +70,8 @@ def edit(request):
     if to_delete:
         to_delete.delete()
     ret = model_to_dict(p)
+    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
+
     ret.pop("archive")
     return HttpResponse(json.dumps(ret), status=200)
 
@@ -85,7 +89,7 @@ def data(request,id):
     return HttpResponse(json.dumps(ret), status=200)
 
 
-def fav(request,id):
+def fav(request):
     post_id = request.POST.get("id")
     try:
         p = Post.objects.get(id=post_id)
@@ -286,9 +290,8 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj.save()
         if self.request.POST.get("archive"):
             self.p_obj.queue_download()
-        for tag in form.cleaned_data["tags"]:
-            t, c = Tag.objects.get_or_create(name=tag)
-            self.p_obj.tags.add(t)
+        for tag in create_tags(form.cleaned_data["tags"]):
+            self.p_obj.tags.add(tag)
         return redirect("index")
 
     def get_context_data(self, **kwargs):

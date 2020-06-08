@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 from website.models import Account, Post, Tag
-
+from website.utils import clean_tags
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="Email", required=True)
@@ -33,9 +33,7 @@ class AddPostForm(forms.ModelForm):
 
     def clean_tags(self):
         cleaned_data = super().clean()
-        tags = self.cleaned_data["tags"].replace(",", " ").split()
-        return tags 
-
+        return clean_tags(self.cleaned_data["tags"])
 
 
 class EditProfileForm(forms.ModelForm):

@@ -177,7 +177,8 @@ function edit_bookmark(id) {
         d = get_form_data(id)
         form_data = {
             "url": d[0],
-            "title": d[1]
+            "title": d[1],
+            "tags": d[2]
         }
         update_bookmark(id, form_data);
         clear_edit_menu(id);
@@ -187,7 +188,8 @@ function edit_bookmark(id) {
 function get_form_data(id) {
     url = document.getElementById(id).querySelector("input[name=url]").value
     title = document.getElementById(id).querySelector("input[name=title]").value
-    return [url, title]
+    tags = document.getElementById(id).querySelector("input[name=tags]").value
+    return [url, title,tags]
 }
 
 function clear_edit_menu(id) {
@@ -203,7 +205,7 @@ function clear_edit_menu(id) {
 }
 
 
-function update_bookmark(id) {
+function update_bookmark(id, form_data) {
     response = send_post_request(id, EDIT_URL, form_data)
     response.onload = function () {
         if (response.status == 200) {
