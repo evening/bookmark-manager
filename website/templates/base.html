@@ -12,12 +12,15 @@
         <script>
             var tag_list = list_tags_from_string("{% for tag in tags %}{{tag.name}} {% endfor %}")
             function match_tags(bookmark) {
-                console.log(bookmark)
                 input = bookmark.querySelector("input[name='tags']").value
-                var reg = new RegExp("^" + input.split(' ').filter(e => e).slice(-1)[0] , 'i');
+                var reg = new RegExp("^" + input.split(/[ ,]+/).slice(-1)[0] , 'i');
                 return tag_list.filter(function(tag_prediction) {
+                    // if regex is empty, erase
+                    if(reg == "/^/i") {
+                        return
+                    }
                     if (tag_prediction.match(reg)) {
-                    return tag_prediction;
+                        return tag_prediction;
                     }
                 });
             }
