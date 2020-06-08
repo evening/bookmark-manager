@@ -267,8 +267,7 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj.save()
         if self.request.POST.get("archive"):
             self.p_obj.queue_download()
-        tags = form.cleaned_data["tags"].replace(",", " ").split()
-        for tag in tags:
+        for tag in form.cleaned_data["tags"]:
             t, c = Tag.objects.get_or_create(name=tag)
             self.p_obj.tags.add(t)
         return redirect("index")
