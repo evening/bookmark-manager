@@ -223,9 +223,7 @@ function update_bookmark(id, form_data) {
             bookmark.querySelector(".title").href = updated_data["url"]
             bookmark.querySelector(".url").href = updated_data["url"];
             if (bookmark.contains(bookmark.querySelector(".tags"))) {
-                while (bookmark.querySelector(".tags").firstChild) {
-                    bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
-                }
+                    bookmark.querySelector(".tags").innerHTML = ""
             } else {
                 tags = document.createElement("span")
                 tags.className = "tags"
