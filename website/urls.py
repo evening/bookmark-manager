@@ -23,6 +23,7 @@ urlpatterns = [
         name="logout",
     ),
     path("signup/", views.SignUp.as_view(), name="signup"),
+    path("u:<str:username>/t:<str:tag>", views.TagView.as_view(), name="tag_view"),
     path("u:<str:username>", views.ProfileView.as_view(), name="profile"),
     path(
         "u:<str:username>/fav/", views.FavoriteView.as_view(), name="profile_favorite"

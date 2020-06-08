@@ -5,21 +5,27 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('website', '0003_auto_20200603_1810'),
-    ]
+    dependencies = [("website", "0003_auto_20200603_1810")]
 
     operations = [
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=30, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(db_index=True, max_length=30, unique=True)),
             ],
         ),
         migrations.AddField(
-            model_name='post',
-            name='tags',
-            field=models.ManyToManyField(related_name='tag', to='website.Tag'),
+            model_name="post",
+            name="tags",
+            field=models.ManyToManyField(related_name="tag", to="website.Tag"),
         ),
     ]

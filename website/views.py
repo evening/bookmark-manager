@@ -186,8 +186,30 @@ class ProfileView(generic.ListView):
         data["count"] = Post.objects.filter(
             author__username=self.kwargs.get("username")
         ).count()
-        data["tags"] = Tag.objects.filter(tag__author=self.request.user)
+        tags_sidebar = Tag.objects.filter(
+            tag__author__username=self.kwargs.get("username")
+        )
+        if self.request.user.is_authenticated:
+            tags_sidebar = tags_sidebar.filter(
+                Q(tag__author__public=True) | Q(tag__author=self.request.user)
+            ).distinct()
+        else:
+            print("no")
+            tags_sidebar = tags_sidebar.filter(tag__author__public=True).distinct()
+        data["tags"] = tags_sidebar
         return data
+
+
+class TagView(ProfileView):
+    def get_queryset(self):
+        tag = self.kwargs.get("tag")
+        try:
+            tag = Tag.objects.get(name=tag)
+            data = super().get_queryset()
+            data = data.filter(tags__in=[tag])
+            return data
+        except:
+            return Post.objects.none()
 
 
 class FavoriteView(ProfileView):
@@ -245,9 +267,9 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj.save()
         if self.request.POST.get("archive"):
             self.p_obj.queue_download()
-        tags = form.cleaned_data["tags"].replace(","," ").split()
+        tags = form.cleaned_data["tags"].replace(",", " ").split()
         for tag in tags:
-            t,c = Tag.objects.get_or_create(name=tag)
+            t, c = Tag.objects.get_or_create(name=tag)
             self.p_obj.tags.add(t)
         return redirect("index")
 

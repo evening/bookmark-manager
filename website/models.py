@@ -22,8 +22,10 @@ class Account(AbstractUser):
     last_name = None
     public = models.BooleanField(default=False)
 
+
 class Tag(models.Model):
     name = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
+
     def __str__(self):
         return f"<Tag: {self.name}>"
 
