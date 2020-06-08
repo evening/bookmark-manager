@@ -222,8 +222,16 @@ function update_bookmark(id, form_data) {
             bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
             bookmark.querySelector(".title").href = updated_data["url"]
             bookmark.querySelector(".url").href = updated_data["url"];
-            while (bookmark.querySelector(".tags").firstChild) {
-                bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
+            if (bookmark.contains(bookmark.querySelector(".tags"))) {
+                while (bookmark.querySelector(".tags").firstChild) {
+                    bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
+                }
+            } else {
+                tags = document.createElement("span")
+                tags.className = "tags"
+                bookmark.insertBefore(tags, bookmark.querySelector(".time"))
+                bookmark.insertBefore(document.createElement("br"), bookmark.querySelector(".time"))
+
             }
             bookmark.querySelector(".tags").appendChild(generate_new_tags(updated_data["tags"]))
 

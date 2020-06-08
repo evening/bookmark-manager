@@ -1,6 +1,5 @@
 import copy
 import json
-import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
@@ -22,7 +21,13 @@ from website.forms import (
     AddPostForm,
 )
 from website.models import Account, Archive, Post, Tag
-from website.utils import clean_tags, create_tags, tags_as_strings, clean_tags_str
+from website.utils import (
+    clean_tags,
+    create_tags,
+    tags_as_strings,
+    clean_tags_str,
+    clean_create,
+)
 
 website_title = "Bookmark Manager :: "
 
@@ -36,7 +41,6 @@ def delete(request):
 
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
-
     p.delete()
     return HttpResponse(status=200)
 
@@ -61,16 +65,14 @@ def edit(request):
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
 
-    to_delete = None
+    archive_delete = None
     if (
         p.archive and r.get("url") != p.url
     ):  # if changing url when there's an archive, just delete
-        to_delete = p.archive
+        archive_delete = p.archive
         p.archive = None
 
-    tag_names = r.pop("tags", list())[0]
-    tag_names = clean_tags(tag_names)
-    new_tags = create_tags(tag_names)
+    new_tags = clean_create(r.pop("tags", list())[0])
     p_tags = p.tags.all()
     for t in set(new_tags) - set(p_tags):
         p.tags.add(t)
@@ -81,18 +83,18 @@ def edit(request):
         if hasattr(p, k):
             setattr(p, k, v)
 
-    if to_delete:
+    if archive_delete:
         to_delete.delete()
 
     p.save()
     ret = model_to_dict(p)
     ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
+    ret["archive"] = str(ret["archive"])
 
     return HttpResponse(json.dumps(ret), status=200)
 
 
 def data(request, id):
-    # r = request.GET
     try:
         p = Post.objects.get(id=id)
     except Post.DoesNotExist:

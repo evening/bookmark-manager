@@ -17,3 +17,7 @@ def create_tags(tags: List[str]):
 
 def tags_as_strings(p: Post):
     return " ".join(sorted([i.name for i in p.tags.all()]))
+
+
+def clean_create(s):
+    return create_tags(clean_tags(s))
