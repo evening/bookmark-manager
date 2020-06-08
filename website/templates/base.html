@@ -6,10 +6,36 @@
         <script src="{%static 'main.js' %}"></script>
         <link rel="shortcut icon" href="{%static 'favicon.ico' %}">
         <title>{{title}}</title>
+
     </head>
     <body>
+        <script>
+            var tag_list = list_tags_from_string("{% for tag in tags %}{{tag.name}} {% endfor %}")
+            function match_tags(bookmark) {
+                console.log(bookmark)
+                input = bookmark.querySelector("input[name='tags']").value
+                var reg = new RegExp("^" + input.split(' ').filter(e => e).slice(-1)[0] , 'i');
+                return tag_list.filter(function(tag_prediction) {
+                    if (tag_prediction.match(reg)) {
+                    return tag_prediction;
+                    }
+                });
+            }
+            function predict_input (bookmark) {
+                var tag_results = match_tags(bookmark);
+                bookmark.querySelector(".prediction").innerHTML = tag_results;
+            }
+        </script>
+        <style>
+            #result {
+                position: absolute;
+                background-color: white;
+                border: 1px solid #aaa;
+            }
+        </style>
     <div id="content">
         <div id="banner">
+            
             <div id="logo">
                 {% if user.is_authenticated %}
                 <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>

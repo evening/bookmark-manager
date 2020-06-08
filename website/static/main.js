@@ -98,6 +98,10 @@ function confirm_destroy(id) {
     }
 }
 
+function list_tags_from_string(s) {
+    return s.split(" ").filter(e => e)
+}
+
 function parse_tags(bookmark) {
     if (!bookmark.contains(bookmark.querySelector(".tags"))) {
         return ""
@@ -131,8 +135,10 @@ function edit_bookmark(id) {
 
     tags = document.createElement("input")
     tags.name = "tags"
+    tags.onkeyup = function(){predict_input(bookmark)}
     tags.value = parse_tags(bookmark)
-
+    prediction = document.createElement("div")
+    prediction.className = "prediction"
     title = document.createElement("input")
     title.name = "title"
     title.value = bookmark.querySelector(".title").innerText
@@ -157,6 +163,7 @@ function edit_bookmark(id) {
     edit_menu.appendChild(url);
     edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(tags);
+    edit_menu.appendChild(prediction);
 
     edit_menu.appendChild(document.createElement("br"))
 
