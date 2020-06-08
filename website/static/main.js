@@ -98,24 +98,40 @@ function confirm_destroy(id) {
     }
 }
 
-function edit_bookmark(id) {
+function parse_tags(bookmark) {
+    if (!bookmark.contains(bookmark.querySelector(".tags"))) {
+        return ""
+    }
 
-    bookmark = document.getElementById(id)
+    s = bookmark.querySelector(".tags").innerText
+    ret = s.split(" ")
+    ret.shift();
+    ret.pop();
+    return ret.join(" ")
+}
+
+function edit_bookmark(id) {
+    request = new XMLHttpRequest();
+    data = {
+        "csrfmiddlewaretoken": get_cookie("csrftoken"),
+    }
+
+    // request.open("POST", "http://127.0.0.1:8000/data/189");
+    // request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    // request.send(prepare_vals(data));
+    // request.responseType = "json"
+    // request.onload = function() {
+    //     post_data = request.response;
+    // }
+
+    bookmark = document.getElementById(id);
     c = bookmark.children
     edit_menu = document.createElement("div")
     edit_menu.className = "edit-menu";
-    // edit_menu = document.createElement("form")
-    // edit_menu.method = "post"
-    // edit_menu.action = "/edit/"
 
-    // csrf = document.createElement("input")
-    // csrf.name = "csrfmiddlewaretoken"
-    // csrf.value = get_cookie("csrftoken")
-    // csrf.type = "hidden"
-    // id_hidden = document.createElement("input")
-    // id_hidden.name = "id"
-    // id_hidden.value = id
-    // id_hidden.type = "hidden"
+    tags = document.createElement("input")
+    tags.name = "tags"
+    tags.value = parse_tags(bookmark)
 
     title = document.createElement("input")
     title.name = "title"
@@ -132,14 +148,20 @@ function edit_bookmark(id) {
     cancel = document.createElement("input")
     cancel.value = "cancel";
     cancel.type = "reset";
+
+
     // edit_menu.appendChild(csrf);
     // edit_menu.appendChild(id_hidden);
     edit_menu.appendChild(title);
     edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(url);
     edit_menu.appendChild(document.createElement("br"))
+    edit_menu.appendChild(tags);
+
+    edit_menu.appendChild(document.createElement("br"))
 
     edit_menu.appendChild(submit);
+
     edit_menu.appendChild(cancel);
 
     for (i = 0; i < c.length; i++) {
@@ -156,7 +178,8 @@ function edit_bookmark(id) {
         d = get_form_data(id)
         form_data = {
             "url": d[0],
-            "title": d[1]
+            "title": d[1],
+            "tags": d[2]
         }
         update_bookmark(id, form_data);
         clear_edit_menu(id);
@@ -166,7 +189,8 @@ function edit_bookmark(id) {
 function get_form_data(id) {
     url = document.getElementById(id).querySelector("input[name=url]").value
     title = document.getElementById(id).querySelector("input[name=title]").value
-    return [url, title]
+    tags = document.getElementById(id).querySelector("input[name=tags]").value
+    return [url, title, tags]
 }
 
 function clear_edit_menu(id) {
@@ -182,26 +206,47 @@ function clear_edit_menu(id) {
 }
 
 
-function update_bookmark(id) {
+function update_bookmark(id, form_data) {
     response = send_post_request(id, EDIT_URL, form_data)
     response.onload = function () {
         if (response.status == 200) {
             bookmark = document.getElementById(id);
             updated_data = JSON.parse(response.responseText);
             /* archive gets destroyed if url updated */
-            if(bookmark.querySelector(".url").href !== updated_data["url"]) {
-                if(bookmark.contains(bookmark.querySelector(".archive"))) {
+            if (bookmark.querySelector(".url").href !== updated_data["url"]) {
+                if (bookmark.contains(bookmark.querySelector(".archive"))) {
                     bookmark.querySelector(".archive").remove()
                 }
             }
             bookmark.querySelector(".title").innerText = updated_data["title"]
             bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
             bookmark.querySelector(".title").href = updated_data["url"]
-            bookmark.querySelector(".url").href = updated_data["url"]
+            bookmark.querySelector(".url").href = updated_data["url"];
+            while (bookmark.querySelector(".tags").firstChild) {
+                bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
+            }
+            bookmark.querySelector(".tags").appendChild(generate_new_tags(updated_data["tags"]))
+
         } else {
             alert(`${response.status}: ${response.responseText}`);
         }
     }
 }
 
+function generate_new_tags(arr) {
+    tags = document.createElement("span");
+    tags.appendChild(document.createTextNode("[ "));
 
+    arr.forEach(
+        element => {
+            console.log(element)
+            tag = document.createElement("a");
+            tag.href = window.location.href.split("#")[0] + "/t:" + element;
+            tag.innerText = element
+            tags.appendChild(tag);
+            tags.appendChild(document.createTextNode(" "));
+        }
+    )
+    tags.appendChild(document.createTextNode(" ]"));
+    return tags
+}

@@ -147,3 +147,7 @@ input {
 #tags {
     padding: 20px;
 }
+
+span.tags a{
+    color: #bb4411;
+}

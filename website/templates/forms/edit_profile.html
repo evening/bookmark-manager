@@ -16,7 +16,9 @@
             <li>Joined {{date_joined|date:"M d Y"}}. Last logged in {{last_login|date:"M d Y"}}.</li>
             <li>{{total_bookmarks}} bookmarks.</li>
             <li>{{faved_bookmarks}} favorited bookmarks.</li>
-            <li>Most recent added {{last_added|date:"M d h:i" }}.</li>
+            {% if last_added%}
+                <li>Most recent added {{last_added|date:"M d h:i" }}.</li>
+            {% endif %}
         </ul>
         <br>
         <p>Change password <a href="{% url 'password_change' %}">here</a>.</p>

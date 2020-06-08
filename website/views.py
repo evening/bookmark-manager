@@ -1,5 +1,6 @@
 import copy
 import json
+import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
@@ -13,9 +14,15 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-
-from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm
-from website.models import Account, Archive, Post
+from website.forms import (
+    AddPostForm,
+    EditProfileForm,
+    SignUpForm,
+    AccountDeleteForm,
+    AddPostForm,
+)
+from website.models import Account, Archive, Post, Tag
+from website.utils import clean_tags, create_tags, tags_as_strings, clean_tags_str
 
 website_title = "Bookmark Manager :: "
 
@@ -45,7 +52,7 @@ def view_archive(request, uuid):
 
 
 def edit(request):
-    r = request.POST
+    r = copy.deepcopy(request.POST)
     try:
         p = Post.objects.get(id=r.get("id"))
     except Post.DoesNotExist:
@@ -61,14 +68,40 @@ def edit(request):
         to_delete = p.archive
         p.archive = None
 
+    tag_names = r.pop("tags", list())[0]
+    tag_names = clean_tags(tag_names)
+    new_tags = create_tags(tag_names)
+    p_tags = p.tags.all()
+    for t in set(new_tags) - set(p_tags):
+        p.tags.add(t)
+    for t in set(p_tags) - set(new_tags):
+        p.tags.remove(t)
+
     for k, v in r.items():
         if hasattr(p, k):
             setattr(p, k, v)
-    p.save()
+
     if to_delete:
         to_delete.delete()
+
+    p.save()
     ret = model_to_dict(p)
-    ret.pop("archive")
+    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
+
+    return HttpResponse(json.dumps(ret), status=200)
+
+
+def data(request, id):
+    # r = request.GET
+    try:
+        p = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        raise Http404
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+    ret = model_to_dict(p)
+    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
+    ret["archive"] = str(ret["archive"])
     return HttpResponse(json.dumps(ret), status=200)
 
 
@@ -186,7 +219,29 @@ class ProfileView(generic.ListView):
         data["count"] = Post.objects.filter(
             author__username=self.kwargs.get("username")
         ).count()
+        tags_sidebar = Tag.objects.filter(
+            tag__author__username=self.kwargs.get("username")
+        )
+        if self.request.user.is_authenticated:
+            tags_sidebar = tags_sidebar.filter(
+                Q(tag__author__public=True) | Q(tag__author=self.request.user)
+            ).distinct()
+        else:
+            tags_sidebar = tags_sidebar.filter(tag__author__public=True).distinct()
+        data["tags"] = tags_sidebar
         return data
+
+
+class TagView(ProfileView):
+    def get_queryset(self):
+        tag = self.kwargs.get("tag")
+        try:
+            tag = Tag.objects.get(name=tag)
+            data = super().get_queryset()
+            data = data.filter(tags__in=[tag])
+            return data
+        except:
+            return Post.objects.none()
 
 
 class FavoriteView(ProfileView):
@@ -226,9 +281,15 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
         title = website_title + "Change account information"
         posts = Post.objects.filter(author=self.request.user)
         data["title"] = title
-        data["total_bookmarks"] = posts.count()
-        data["faved_bookmarks"] = posts.filter(fav=True).count()
-        data["last_added"] = posts.filter(fav=True).latest("date").date
+        if posts.count() == 0:
+            data["total_bookmarks"] = 0
+            data["faved_bookmarks"] = 0
+            data["last_added"] = None
+        else:
+            data["total_bookmarks"] = posts.count()
+            data["faved_bookmarks"] = posts.filter(fav=True).count()
+            data["last_added"] = posts.filter(fav=True).latest("date").date
+
         data["date_joined"] = self.request.user.date_joined
         data["last_login"] = self.request.user.last_login
         return data
@@ -244,6 +305,8 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj.save()
         if self.request.POST.get("archive"):
             self.p_obj.queue_download()
+        for tag in create_tags(form.cleaned_data["tags"]):
+            self.p_obj.tags.add(tag)
         return redirect("index")
 
     def get_context_data(self, **kwargs):

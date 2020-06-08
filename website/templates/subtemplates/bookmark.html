@@ -16,6 +16,12 @@
     {% endif %}
     <br>
     <a class="url" href="{{post.url}}">{{post.url | truncatechars:70}}</a> <br> 
+    {% if post.tags.count %}
+    <span class="tags">[
+        {% for tag in post.tags.all %}
+            <a href="{% url 'tag_view' username=view.kwargs.username tag=tag.name %}">{{tag.name}}</a>
+        {% endfor %}]</span><br>
+    {% endif %}
     <a class="time" href="#" title="{{post.date|date:"o.m.d   H.i.s" | lower}}">{{post.date|date:"F Y" | lower}}</a>
     {% if view.kwargs.username == request.user.username %}
         {% if post.fav %}
@@ -26,4 +32,5 @@
         <a class="edit" onclick="edit_bookmark({{post.id}});return false;" href="#">edit</a>
         <a class="delete" onclick="delete_bookmark({{post.id}});return false;" href="#">delete</a>
     {% endif %}
+
 </div>

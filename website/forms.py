@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from website.models import Account, Post
+from website.models import Account, Post, Tag
+from website.utils import clean_tags
 
 
 class SignUpForm(UserCreationForm):
@@ -20,6 +21,7 @@ class SignUpForm(UserCreationForm):
 
 class AddPostForm(forms.ModelForm):
     archive = forms.BooleanField(initial=False, required=False)
+    tags = forms.CharField(label="Tags", required=False)
 
     class Meta:
         model = Post
@@ -28,6 +30,10 @@ class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddPostForm, self).__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"value": "http://"}
+
+    def clean_tags(self):
+        cleaned_data = super().clean()
+        return clean_tags(self.cleaned_data["tags"])
 
 
 class EditProfileForm(forms.ModelForm):
@@ -49,8 +55,9 @@ class AccountDeleteForm(forms.Form):
         super(AccountDeleteForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError("passwords do not match")
