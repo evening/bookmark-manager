@@ -14,6 +14,7 @@ urlpatterns = [
     path("archive/<uuid:uuid>", views.view_archive, name="archive"),
     path("autoadd", views.autoadd, name="autoadd"),
     path("delete/", views.delete, name="delete"),
+    path("data/<int:id>", views.data, name="data"),
     path("edit/", views.edit, name="edit"),
     path("fav/", views.fav, name="fav"),
     path("login/", views.LoginView.as_view(), name="login"),

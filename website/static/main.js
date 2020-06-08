@@ -98,24 +98,39 @@ function confirm_destroy(id) {
     }
 }
 
-function edit_bookmark(id) {
+function parse_tags(bookmark) {
+    if(!bookmark.contains(bookmark.querySelector(".tags"))) {
+        return ""
+    }
 
-    bookmark = document.getElementById(id)
+    s = bookmark.querySelector(".tags").innerText
+    ret = s.split(" ")
+    ret.shift(); ret.pop();
+    return ret.join(" ")
+}
+
+function edit_bookmark(id) {
+    request = new XMLHttpRequest();
+    data = {
+        "csrfmiddlewaretoken": get_cookie("csrftoken"),
+    }
+
+    // request.open("POST", "http://127.0.0.1:8000/data/189");
+    // request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    // request.send(prepare_vals(data));
+    // request.responseType = "json"
+    // request.onload = function() {
+    //     post_data = request.response;
+    // }
+
+    bookmark = document.getElementById(id);
     c = bookmark.children
     edit_menu = document.createElement("div")
     edit_menu.className = "edit-menu";
-    // edit_menu = document.createElement("form")
-    // edit_menu.method = "post"
-    // edit_menu.action = "/edit/"
 
-    // csrf = document.createElement("input")
-    // csrf.name = "csrfmiddlewaretoken"
-    // csrf.value = get_cookie("csrftoken")
-    // csrf.type = "hidden"
-    // id_hidden = document.createElement("input")
-    // id_hidden.name = "id"
-    // id_hidden.value = id
-    // id_hidden.type = "hidden"
+    tags = document.createElement("input")
+    tags.name = "tags"
+    tags.value = parse_tags(bookmark)
 
     title = document.createElement("input")
     title.name = "title"
@@ -132,14 +147,20 @@ function edit_bookmark(id) {
     cancel = document.createElement("input")
     cancel.value = "cancel";
     cancel.type = "reset";
+
+    
     // edit_menu.appendChild(csrf);
     // edit_menu.appendChild(id_hidden);
     edit_menu.appendChild(title);
     edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(url);
     edit_menu.appendChild(document.createElement("br"))
+    edit_menu.appendChild(tags);
+
+    edit_menu.appendChild(document.createElement("br"))
 
     edit_menu.appendChild(submit);
+    
     edit_menu.appendChild(cancel);
 
     for (i = 0; i < c.length; i++) {

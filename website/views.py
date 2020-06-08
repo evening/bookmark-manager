@@ -71,8 +71,21 @@ def edit(request):
     ret.pop("archive")
     return HttpResponse(json.dumps(ret), status=200)
 
+def data(request,id):
+    # r = request.GET
+    try:
+        p = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        raise Http404
+    if not p.author == request.user:
+        return HttpResponse("Not authorized", status=403)
+    ret = model_to_dict(p)
+    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
+    ret["archive"] = str(ret["archive"])
+    return HttpResponse(json.dumps(ret), status=200)
 
-def fav(request):
+
+def fav(request,id):
     post_id = request.POST.get("id")
     try:
         p = Post.objects.get(id=post_id)
