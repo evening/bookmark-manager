@@ -16,7 +16,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm, AddPostForm
 from website.models import Account, Archive, Post, Tag
-from website.utils import clean_tags, create_tags
+from website.utils import clean_tags, create_tags, tags_as_strings, clean_tags_str
 
 website_title = "Bookmark Manager :: "
 
@@ -61,18 +61,27 @@ def edit(request):
     ):  # if changing url when there's an archive, just delete
         to_delete = p.archive
         p.archive = None
-    tags = r.pop("tags")
-    print(tags)
+
+    tag_names = r.pop("tags",list())[0]
+    tag_names = clean_tags(tag_names)
+    new_tags = create_tags(tag_names)
+    p_tags = p.tags.all()
+    for t in set(new_tags) - set(p_tags):
+        p.tags.add(t)
+    for t in set(p_tags) - set(new_tags):
+        p.tags.remove(t)
+
     for k, v in r.items():
         if hasattr(p, k):
             setattr(p, k, v)
-    p.save()
+
     if to_delete:
         to_delete.delete()
+
+    p.save()
     ret = model_to_dict(p)
     ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
 
-    ret.pop("archive")
     return HttpResponse(json.dumps(ret), status=200)
 
 def data(request,id):
@@ -211,7 +220,6 @@ class ProfileView(generic.ListView):
                 Q(tag__author__public=True) | Q(tag__author=self.request.user)
             ).distinct()
         else:
-            print("no")
             tags_sidebar = tags_sidebar.filter(tag__author__public=True).distinct()
         data["tags"] = tags_sidebar
         return data
