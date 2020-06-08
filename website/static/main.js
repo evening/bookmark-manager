@@ -99,13 +99,14 @@ function confirm_destroy(id) {
 }
 
 function parse_tags(bookmark) {
-    if(!bookmark.contains(bookmark.querySelector(".tags"))) {
+    if (!bookmark.contains(bookmark.querySelector(".tags"))) {
         return ""
     }
 
     s = bookmark.querySelector(".tags").innerText
     ret = s.split(" ")
-    ret.shift(); ret.pop();
+    ret.shift();
+    ret.pop();
     return ret.join(" ")
 }
 
@@ -148,7 +149,7 @@ function edit_bookmark(id) {
     cancel.value = "cancel";
     cancel.type = "reset";
 
-    
+
     // edit_menu.appendChild(csrf);
     // edit_menu.appendChild(id_hidden);
     edit_menu.appendChild(title);
@@ -160,7 +161,7 @@ function edit_bookmark(id) {
     edit_menu.appendChild(document.createElement("br"))
 
     edit_menu.appendChild(submit);
-    
+
     edit_menu.appendChild(cancel);
 
     for (i = 0; i < c.length; i++) {
@@ -189,7 +190,7 @@ function get_form_data(id) {
     url = document.getElementById(id).querySelector("input[name=url]").value
     title = document.getElementById(id).querySelector("input[name=title]").value
     tags = document.getElementById(id).querySelector("input[name=tags]").value
-    return [url, title,tags]
+    return [url, title, tags]
 }
 
 function clear_edit_menu(id) {
@@ -212,8 +213,8 @@ function update_bookmark(id, form_data) {
             bookmark = document.getElementById(id);
             updated_data = JSON.parse(response.responseText);
             /* archive gets destroyed if url updated */
-            if(bookmark.querySelector(".url").href !== updated_data["url"]) {
-                if(bookmark.contains(bookmark.querySelector(".archive"))) {
+            if (bookmark.querySelector(".url").href !== updated_data["url"]) {
+                if (bookmark.contains(bookmark.querySelector(".archive"))) {
                     bookmark.querySelector(".archive").remove()
                 }
             }
@@ -221,7 +222,7 @@ function update_bookmark(id, form_data) {
             bookmark.querySelector(".url").innerText = truncate(updated_data["url"])
             bookmark.querySelector(".title").href = updated_data["url"]
             bookmark.querySelector(".url").href = updated_data["url"];
-            while(bookmark.querySelector(".tags").firstChild) {
+            while (bookmark.querySelector(".tags").firstChild) {
                 bookmark.querySelector(".tags").removeChild(bookmark.querySelector(".tags").firstChild)
             }
             bookmark.querySelector(".tags").appendChild(generate_new_tags(updated_data["tags"]))
@@ -247,6 +248,5 @@ function generate_new_tags(arr) {
         }
     )
     tags.appendChild(document.createTextNode(" ]"));
-    return tags 
+    return tags
 }
-

@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from website.models import Account, Post, Tag
 from website.utils import clean_tags
 
+
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="Email", required=True)
 
@@ -29,7 +30,6 @@ class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddPostForm, self).__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"value": "http://"}
-
 
     def clean_tags(self):
         cleaned_data = super().clean()

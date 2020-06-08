@@ -14,7 +14,13 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-from website.forms import AddPostForm, EditProfileForm, SignUpForm, AccountDeleteForm, AddPostForm
+from website.forms import (
+    AddPostForm,
+    EditProfileForm,
+    SignUpForm,
+    AccountDeleteForm,
+    AddPostForm,
+)
 from website.models import Account, Archive, Post, Tag
 from website.utils import clean_tags, create_tags, tags_as_strings, clean_tags_str
 
@@ -62,7 +68,7 @@ def edit(request):
         to_delete = p.archive
         p.archive = None
 
-    tag_names = r.pop("tags",list())[0]
+    tag_names = r.pop("tags", list())[0]
     tag_names = clean_tags(tag_names)
     new_tags = create_tags(tag_names)
     p_tags = p.tags.all()
@@ -84,7 +90,8 @@ def edit(request):
 
     return HttpResponse(json.dumps(ret), status=200)
 
-def data(request,id):
+
+def data(request, id):
     # r = request.GET
     try:
         p = Post.objects.get(id=id)
@@ -279,8 +286,8 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
             data["faved_bookmarks"] = 0
             data["last_added"] = None
         else:
-            data["total_bookmarks"] = posts.count() 
-            data["faved_bookmarks"] = posts.filter(fav=True).count() 
+            data["total_bookmarks"] = posts.count()
+            data["faved_bookmarks"] = posts.filter(fav=True).count()
             data["last_added"] = posts.filter(fav=True).latest("date").date
 
         data["date_joined"] = self.request.user.date_joined
