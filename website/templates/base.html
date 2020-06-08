@@ -23,7 +23,7 @@
             }
             function predict_input (bookmark) {
                 var tag_results = match_tags(bookmark);
-                bookmark.querySelector(".prediction").innerHTML = tag_results;
+                bookmark.querySelector(".prediction").innerHTML = tag_results.join(" ");
             }
         </script>
         <style>
