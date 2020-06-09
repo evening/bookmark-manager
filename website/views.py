@@ -218,7 +218,7 @@ class ProfileView(generic.ListView):
         q = self.request.GET.get("q")
         if q:
             title = title + "Searching " + self.request.GET.get("q", "")
-        data["title"] = title
+        data["title"] = title + self.kwargs.get("username")
         # if i decide to make specific urls private instead of accounts, this will leak total number
         data["count"] = Post.objects.filter(
             author__username=self.kwargs.get("username")
@@ -318,5 +318,6 @@ class Add(LoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         title = website_title + "Add new link"
-        data["title"] = title
+        data["tags"] = Tag.objects.filter(post_tag__author=self.request.user).distinct()
+
         return data

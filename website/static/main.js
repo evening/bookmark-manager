@@ -98,6 +98,10 @@ function confirm_destroy(id) {
     }
 }
 
+function list_tags_from_string(s) {
+    return s.split(" ").filter(e => e)
+}
+
 function parse_tags(bookmark) {
     if (!bookmark.contains(bookmark.querySelector(".tags"))) {
         return ""
@@ -131,8 +135,10 @@ function edit_bookmark(id) {
 
     tags = document.createElement("input")
     tags.name = "tags"
-    tags.value = parse_tags(bookmark)
-
+    // need to get the ID otherwise 'variable bookmark' might be overwritten?
+    tags.onkeyup = function(){predict_input(document.getElementById(id).querySelector(".edit-menu"))}
+    tags.onblur = function(){remove_suggestions(document.getElementById(id).querySelector(".edit-menu"))}
+    tags.value = parse_tags(document.getElementById(id))
     title = document.createElement("input")
     title.name = "title"
     title.value = bookmark.querySelector(".title").innerText
@@ -157,6 +163,7 @@ function edit_bookmark(id) {
     edit_menu.appendChild(url);
     edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(tags);
+    // edit_menu.appendChild(prediction);
 
     edit_menu.appendChild(document.createElement("br"))
 
@@ -245,7 +252,6 @@ function generate_new_tags(arr) {
 
     arr.forEach(
         element => {
-            console.log(element)
             tag = document.createElement("a");
             tag.href = window.location.href.split("#")[0] + "/t:" + element;
             tag.innerText = element

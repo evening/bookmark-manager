@@ -3,13 +3,16 @@
     <head>
         {% load static %}
         <link rel="stylesheet" href="{% static 'main.css' %}">
+        <script src="{%static 'predict.js' %}"></script>
         <script src="{%static 'main.js' %}"></script>
         <link rel="shortcut icon" href="{%static 'favicon.ico' %}">
         <title>{{title}}</title>
+
     </head>
     <body>
     <div id="content">
         <div id="banner">
+            
             <div id="logo">
                 {% if user.is_authenticated %}
                 <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>

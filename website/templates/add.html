@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+{% include 'subtemplates/tag_list.html' %}
+
 <div id="double">
     <div id="left">
         <h1> Add post </h1>
-        <form method="post">
+        <form id="add-post" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Add</button>

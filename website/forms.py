@@ -30,6 +30,11 @@ class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddPostForm, self).__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"value": "http://"}
+        self.fields["tags"].widget.attrs = {"name": "tags"}
+        self.fields["tags"].widget.attrs = {
+            "onkeyup": "predict_input_page()",
+            "onblur": "remove_suggestions_page()",
+        }
 
     def clean_tags(self):
         cleaned_data = super().clean()

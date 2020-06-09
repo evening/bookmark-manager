@@ -151,3 +151,8 @@ input {
 span.tags a{
     color: #bb4411;
 }
+
+.prediction {
+    display: inline;
+    padding-left: 10px;
+}
