@@ -153,7 +153,6 @@ span.tags a{
 }
 
 .prediction {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #aaa;
+    display: inline;
+    padding-left: 10px;
 }
