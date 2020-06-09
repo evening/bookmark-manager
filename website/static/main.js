@@ -136,11 +136,9 @@ function edit_bookmark(id) {
     tags = document.createElement("input")
     tags.name = "tags"
     // need to get the ID otherwise 'variable bookmark' might be overwritten?
-    tags.onkeyup = function(){predict_input(document.getElementById(id))}
-    tags.onblur = function(){remove_suggestions(document.getElementById(id))}
+    tags.onkeyup = function(){predict_input(document.getElementById(id).querySelector(".edit-menu"))}
+    tags.onblur = function(){remove_suggestions(document.getElementById(id).querySelector(".edit-menu"))}
     tags.value = parse_tags(document.getElementById(id))
-    prediction = document.createElement("div")
-    prediction.className = "prediction"
     title = document.createElement("input")
     title.name = "title"
     title.value = bookmark.querySelector(".title").innerText
@@ -165,7 +163,7 @@ function edit_bookmark(id) {
     edit_menu.appendChild(url);
     edit_menu.appendChild(document.createElement("br"))
     edit_menu.appendChild(tags);
-    edit_menu.appendChild(prediction);
+    // edit_menu.appendChild(prediction);
 
     edit_menu.appendChild(document.createElement("br"))
 
