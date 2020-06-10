@@ -33,6 +33,7 @@ class AddPostForm(forms.ModelForm):
         self.fields["tags"].widget.attrs = {"name": "tags"}
         self.fields["tags"].widget.attrs = {
             "onkeyup": "predict_input_page()",
+            "onkeydown": "no_tab(event)",
             "onblur": "remove_suggestions_page()",
         }
 

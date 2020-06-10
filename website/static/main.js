@@ -17,6 +17,13 @@ function truncate(str) {
     return str.slice(0, 69) + "…"
 }
 
+function autocomplete_remove_last_word(s) {
+    if(s.split(" ").length > 1) {
+        return s.substring(0, s.lastIndexOf(" ")) + " ";
+    }
+    return s.substring(0, s.lastIndexOf(" "));
+}
+
 
 function send_post_request(id, URL, extra = {}) {
     request = new XMLHttpRequest();
@@ -137,6 +144,7 @@ function edit_bookmark(id) {
     tags.name = "tags"
     // need to get the ID otherwise 'variable bookmark' might be overwritten?
     tags.onkeyup = function(){predict_input(document.getElementById(id).querySelector(".edit-menu"))}
+    tags.onkeydown = no_tab;
     tags.onblur = function(){remove_suggestions(document.getElementById(id).querySelector(".edit-menu"))}
     tags.value = parse_tags(document.getElementById(id))
     title = document.createElement("input")

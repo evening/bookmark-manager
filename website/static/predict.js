@@ -25,20 +25,41 @@ function create_prediction_section(predict_paren) {
     }
 }
 
-function predict_input (predict_paren) {
-    create_prediction_section(predict_paren)
+function predict_input(predict_paren) {
+    create_prediction_section(predict_paren);
     var tag_results = match_tags(predict_paren);
-    predict_paren.querySelector(".prediction").innerHTML = tag_results.join(" ");
+    if (event.keyCode == 9) {
+        if(tag_results[0]) {
+            v = predict_paren.querySelector("input[name='tags']").value
+            predict_paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
+            tag_results = null;
+
+        }
+    }
+
+    predict_paren.querySelector(".prediction").innerHTML = tag_results;
 }
 
 function predict_input_page () {
     paren = document.querySelector("input[name='tags']").parentNode
     create_prediction_section(paren)
     var tag_results = match_tags(paren);
-    console.log(tag_results)
-    paren.querySelector(".prediction").innerHTML = tag_results.join(" ");
+    if (event.keyCode == 9) {
+        if(tag_results[0]) {
+            v = paren.querySelector("input[name='tags']").value
+            paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
+            tag_results = null;
+        }
+    }
+    paren.querySelector(".prediction").innerHTML = tag_results;
 }
 
 function remove_suggestions_page() {
     document.querySelector("input[name='tags']").parentNode.querySelector(".prediction").innerText = ""
+}
+
+function no_tab(e) {
+    if (event.keyCode == 9) {
+        e.preventDefault(); 
+    }
 }
