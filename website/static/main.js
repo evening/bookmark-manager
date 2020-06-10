@@ -148,13 +148,9 @@ function edit_bookmark(id) {
   let tag_input = document.createElement("input");
   tag_input.name = "tags";
   // need to get the ID otherwise 'variable bookmark' might be overwritten?
-  tag_input.onkeyup = function () {
-    predict_input(document.getElementById(id).querySelector(".edit-menu"));
-  };
+  tag_input.onkeyup = predict_tag;
   tag_input.onkeydown = no_tab;
-  tag_input.onblur = function () {
-    remove_suggestions(document.getElementById(id).querySelector(".edit-menu"));
-  };
+  tag_input.onblur = remove_suggestions;
   tag_input.value = parse_tags(document.getElementById(id));
   let title_input = document.createElement("input");
   title_input.name = "title";
