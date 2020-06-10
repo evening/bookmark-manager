@@ -29,7 +29,13 @@ function predict_input(predict_paren) {
     create_prediction_section(predict_paren);
     var tag_results = match_tags(predict_paren);
     if (event.keyCode == 9) {
+        if(tag_results.length < 1) {
+            // if no prediction, tab will just add space 
+            v = paren.querySelector("input[name='tags']").value
+            paren.querySelector("input[name='tags']").value = v + " ";    
+        }
         if(tag_results[0]) {
+            // if prediction, tab will add first prediction to input
             v = predict_paren.querySelector("input[name='tags']").value
             predict_paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
             tag_results = null;
@@ -45,7 +51,13 @@ function predict_input_page () {
     create_prediction_section(paren)
     var tag_results = match_tags(paren);
     if (event.keyCode == 9) {
+        if(tag_results.length < 1) {
+            // if no prediction, tab will just add space 
+            v = paren.querySelector("input[name='tags']").value
+            paren.querySelector("input[name='tags']").value = v + " ";    
+        }
         if(tag_results[0]) {
+            // if prediction, tab will add first prediction to input
             v = paren.querySelector("input[name='tags']").value
             paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
             tag_results = null;
