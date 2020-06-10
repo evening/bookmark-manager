@@ -2,6 +2,13 @@ function remove_suggestions(predict_paren) {
     input = predict_paren.querySelector(".prediction").innerText = ""
 }
 
+function autocomplete_remove_last_word(s) {
+    if(s.split(" ").length > 1) {
+        return s.substring(0, s.lastIndexOf(" ")) + " ";
+    }
+    return s.substring(0, s.lastIndexOf(" "));
+}
+
 
 function match_tags(predict_paren) {
     input = predict_paren.querySelector("input[name='tags']").value
