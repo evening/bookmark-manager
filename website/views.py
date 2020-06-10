@@ -7,8 +7,7 @@ from django.contrib.auth.views import (
     PasswordChangeDoneView,
     PasswordChangeView,
 )
-from django.db.models import Q
-from django.forms.models import model_to_dict
+from django.db.models import Q, Count
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -24,21 +23,17 @@ from website.models import Account, Archive, Post, Tag
 from website.utils import (
     clean_tags,
     create_tags,
-    tags_as_strings,
     clean_tags_str,
     clean_create,
+    post_to_dict,
+    post_or_404,
 )
 
 website_title = "Bookmark Manager :: "
 
 
 def delete(request):
-    post_id = request.POST.get("id")
-    try:
-        p = Post.objects.get(id=post_id)
-    except Post.DoesNotExist:
-        raise Http404
-
+    p = post_or_404(request)
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
     p.delete()
@@ -57,10 +52,7 @@ def view_archive(request, uuid):
 
 def edit(request):
     r = copy.deepcopy(request.POST)
-    try:
-        p = Post.objects.get(id=r.get("id"))
-    except Post.DoesNotExist:
-        raise Http404
+    p = post_or_404(request)
 
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
@@ -87,33 +79,20 @@ def edit(request):
         to_delete.delete()
 
     p.save()
-    ret = model_to_dict(p)
-    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
-    ret["archive"] = str(ret["archive"])
-
+    ret = post_to_dict(p)
     return HttpResponse(json.dumps(ret), status=200)
 
 
 def data(request, id):
-    try:
-        p = Post.objects.get(id=id)
-    except Post.DoesNotExist:
-        raise Http404
+    p = post_or_404(request)
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
-    ret = model_to_dict(p)
-    ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
-    ret["archive"] = str(ret["archive"])
+    ret = post_to_dict(p)
     return HttpResponse(json.dumps(ret), status=200)
 
 
 def fav(request):
-    post_id = request.POST.get("id")
-    try:
-        p = Post.objects.get(id=post_id)
-    except Post.DoesNotExist:
-        raise Http404
-
+    p = post_or_404(request)
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
 
@@ -150,11 +129,13 @@ class AccountDelete(LoginRequiredMixin, generic.FormView):
     success_url = reverse_lazy("account_delete")
 
     def get_form_kwargs(self):
+        # pass in user so i can use check_password() in forms.py
         kw = super(AccountDelete, self).get_form_kwargs()
-        kw["request"] = self.request
+        kw["user"] = self.request.user
         return kw
 
     def form_valid(self, form):
+        # don't delete user, just set to inactive
         self.request.user.is_active = False
         self.request.user.save()
         return redirect("index")
@@ -197,6 +178,7 @@ class ProfileView(generic.ListView):
             raise Http404
         ret = Post.objects.filter(author=user)
         if self.request.user.is_authenticated:
+            # don't hide posts if it's yours.
             ret = ret.filter(Q(author__public=True) | Q(author=self.request.user))
         else:
             ret = ret.filter(author__public=True)
@@ -211,14 +193,14 @@ class ProfileView(generic.ListView):
         return ret.order_by("-date")
 
     def get_context_data(self, **kwargs):
-        from django.db.models import Count
-
         data = super().get_context_data(**kwargs)
-        title = website_title
+        data["title"] = website_title + self.kwargs.get("username")
         q = self.request.GET.get("q")
         if q:
-            title = title + "Searching " + self.request.GET.get("q", "")
-        data["title"] = title + self.kwargs.get("username")
+            data["title"] = (
+                data["title"] + " :: Searching: " + self.request.GET.get("q", "")
+            )
+
         # if i decide to make specific urls private instead of accounts, this will leak total number
         data["count"] = Post.objects.filter(
             author__username=self.kwargs.get("username")
@@ -283,19 +265,19 @@ class EditProfile(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_context_data(self, **kwargs):
+        # information for the statistics sidebar
         data = super().get_context_data(**kwargs)
-        title = website_title + "Change account information"
+        data["title"] = website_title + "Change account information"
+
         posts = Post.objects.filter(author=self.request.user)
-        data["title"] = title
-        if posts.count() == 0:
-            data["total_bookmarks"] = 0
-            data["faved_bookmarks"] = 0
-            data["last_added"] = None
-        else:
+        if posts.count():
             data["total_bookmarks"] = posts.count()
             data["faved_bookmarks"] = posts.filter(fav=True).count()
             data["last_added"] = posts.filter(fav=True).latest("date").date
-
+        else:
+            data["total_bookmarks"] = 0
+            data["faved_bookmarks"] = 0
+            data["last_added"] = None
         data["date_joined"] = self.request.user.date_joined
         data["last_login"] = self.request.user.last_login
         return data

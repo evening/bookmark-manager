@@ -177,7 +177,7 @@ function edit_bookmark(id) {
   edit_menu.appendChild(submit);
   edit_menu.appendChild(cancel);
 
-  c = bookmark.children;
+  let c = bookmark.children;
   for (i = 0; i < c.length; i++) {
     // hide bookmark information to make room for edit menu
     c[i].style.display = "none";
@@ -214,7 +214,7 @@ function get_form_data(id) {
 
 function clear_edit_menu(bookmark) {
   bookmark.querySelector(".edit-menu").remove();
-  c = bookmark.children;
+  let c = bookmark.children;
   for (i = 0; i < c.length; i++) {
     c[i].style.display = "inline";
   }

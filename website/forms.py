@@ -34,7 +34,7 @@ class AddPostForm(forms.ModelForm):
         self.fields["tags"].widget.attrs = {
             "onkeyup": "predict_tag()",
             "onkeydown": "no_tab()",
-            "onblur": "remove_suggestions_page()",
+            "onblur": "remove_suggestions()",
         }
 
     def clean_tags(self):
@@ -57,7 +57,7 @@ class AccountDeleteForm(forms.Form):
     password2 = forms.CharField(widget=forms.PasswordInput(), label="Confirm password")
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request", None)
+        self.user = kwargs.pop("user", None)
         super(AccountDeleteForm, self).__init__(*args, **kwargs)
 
     def clean(self):
@@ -67,6 +67,6 @@ class AccountDeleteForm(forms.Form):
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError("passwords do not match")
-        if not self.request.user.check_password(password2):
+        if not self.user.check_password(password2):
             raise forms.ValidationError("invalid password")
         return password2
