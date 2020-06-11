@@ -1,15 +1,28 @@
-function remove_suggestions(predict_paren) {
-    input = predict_paren.querySelector(".prediction").innerText = ""
+function remove_suggestions() {
+    event.target.parentNode.querySelector(".prediction").innerText = ""
 }
 
+function autocomplete_remove_last_word(s) {
+    if(s.split(" ").length > 1) {
+        // add a space before the new word, if there's a word before it
+        return s.substring(0, s.lastIndexOf(" ")) + " ";
+    }
+    return s.substring(0, s.lastIndexOf(" "));
+}
 
-function match_tags(predict_paren) {
-    input = predict_paren.querySelector("input[name='tags']").value
-    var reg = new RegExp("^" + input.split(/[ ,]+/).slice(-1)[0] , 'i');
+function no_tab() {
+    if (event.keyCode == 9) {
+        event.preventDefault(); 
+    }
+}
+
+function match_tags(elem) {
+    let value = elem.value
+    var reg = new RegExp("^" + value.split(/[ ,]+/).slice(-1)[0] , 'i');
     return tag_list.filter(function(tag_prediction) {
         // if regex is empty, erase
         if(reg == "/^/i") {
-            return
+            return null
         }
         if (tag_prediction.match(reg)) {
             return tag_prediction;
@@ -17,61 +30,31 @@ function match_tags(predict_paren) {
     });
 }
 
-function create_prediction_section(predict_paren) {
-    if (!predict_paren.contains(predict_paren.querySelector(".prediction"))) {
-        elem = document.createElement("div")
-        elem.className = "prediction"
-        predict_paren.insertBefore(elem, predict_paren.querySelector("input[name='tags']").nextSibling )
+function create_prediction_section(elem) {
+    // create a predictions section
+    if (!elem.contains(elem.querySelector(".prediction"))) {
+        let prediction = document.createElement("span")
+        prediction.className = "prediction"
+        elem.insertBefore(prediction, elem.querySelector("input[name='tags']").nextSibling )
     }
 }
 
-function predict_input(predict_paren) {
-    create_prediction_section(predict_paren);
-    var tag_results = match_tags(predict_paren);
+function predict_tag() {
+    let elem = event.target;
+    create_prediction_section(elem.parentNode);
+    let tag_results = match_tags(elem);
     if (event.keyCode == 9) {
-        if(tag_results.length < 1) {
-            // if no prediction, tab will just add space 
-            v = paren.querySelector("input[name='tags']").value
-            paren.querySelector("input[name='tags']").value = v + " ";    
+        if(tag_results.length == 0) {
+            // if no prediction, just add a space. 
+            if(!elem.value.endsWith(" ")) {
+                elem.value += " ";
+            }
         }
         if(tag_results[0]) {
             // if prediction, tab will add first prediction to input
-            v = predict_paren.querySelector("input[name='tags']").value
-            predict_paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
-            tag_results = null;
-
+            elem.value = autocomplete_remove_last_word(elem.value) + tag_results[0] + " ";    
+            tag_results = null; // reset predictions
         }
     }
-
-    predict_paren.querySelector(".prediction").innerHTML = tag_results;
-}
-
-function predict_input_page () {
-    paren = document.querySelector("input[name='tags']").parentNode
-    create_prediction_section(paren)
-    var tag_results = match_tags(paren);
-    if (event.keyCode == 9) {
-        if(tag_results.length < 1) {
-            // if no prediction, tab will just add space 
-            v = paren.querySelector("input[name='tags']").value
-            paren.querySelector("input[name='tags']").value = v + " ";    
-        }
-        if(tag_results[0]) {
-            // if prediction, tab will add first prediction to input
-            v = paren.querySelector("input[name='tags']").value
-            paren.querySelector("input[name='tags']").value = autocomplete_remove_last_word(v) + tag_results[0] + " ";    
-            tag_results = null;
-        }
-    }
-    paren.querySelector(".prediction").innerHTML = tag_results;
-}
-
-function remove_suggestions_page() {
-    document.querySelector("input[name='tags']").parentNode.querySelector(".prediction").innerText = ""
-}
-
-function no_tab(e) {
-    if (event.keyCode == 9) {
-        e.preventDefault(); 
-    }
+    elem.parentNode.querySelector(".prediction").innerHTML = tag_results;
 }

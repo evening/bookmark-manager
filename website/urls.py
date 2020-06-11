@@ -11,7 +11,7 @@ urlpatterns = [
         "account/password", views.PasswordChangeView.as_view(), name="password_change"
     ),
     path("add", views.Add.as_view(), name="add"),
-    path("archive/<uuid:uuid>", views.view_archive, name="archive"),
+    path("snapshot/<uuid:uuid>", views.view_snapshot, name="snapshot"),
     path("autoadd", views.autoadd, name="autoadd"),
     path("delete/", views.delete, name="delete"),
     path("data/<int:id>", views.data, name="data"),

@@ -5,12 +5,12 @@
     {% endif %}
     <a class="title" href="{{post.url}}">{{post.title}}</a>
     {% if view.kwargs.username == request.user.username %}
-        {% if post.archive %}
-            {% if post.archive.content  %}
-            <a class="archive" href="{% url 'archive' post.archive.id %}" title="{{post.archive.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
+        {% if post.snapshot %}
+            {% if post.snapshot.content  %}
+            <a class="snapshot" href="{% url 'snapshot' post.snapshot.id %}" title="{{post.snapshot.date|date:"o.m.d   H.i.s" | lower}}">🗗</a>
             {% endif %}
-            {% if not post.archive.content  %}
-            <a class="archive" title="pending archive">◷</a>
+            {% if not post.snapshot.content  %}
+            <a class="snapshot" title="pending snapshot">◷</a>
             {% endif %}
         {% endif %}
     {% endif %}

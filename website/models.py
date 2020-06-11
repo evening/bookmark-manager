@@ -12,7 +12,7 @@ from django.db import models
 
 
 def upload_to(instance, filename):
-    return f"archives/{instance.website_archive.author.id}/{filename}"
+    return f"archives/{instance.website_snapshot.author.id}/{filename}"
 
 
 class Account(AbstractUser):
@@ -30,18 +30,18 @@ class Tag(models.Model):
         return f"<Tag: {self.name}>"
 
 
-class Archive(models.Model):
+class Snapshot(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateTimeField(auto_now=True)
     content = models.FileField(upload_to=upload_to)
     content_type = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self):
-        return f"{self.date} | {self.website_archive}"
+        return f"{self.date} | {self.website_snapshot}"
 
     def delete(self, *args, **kwargs):
         self.content.delete()
-        super(Archive, self).delete(*args, **kwargs)
+        super(Snapshot, self).delete(*args, **kwargs)
 
 
 class Post(models.Model):
@@ -51,13 +51,13 @@ class Post(models.Model):
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     fav = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, related_name="post_tag")
-    archive = models.OneToOneField(
-        Archive, on_delete=models.CASCADE, null=True, related_name="website_archive"
+    snapshot = models.OneToOneField(
+        Snapshot, on_delete=models.CASCADE, null=True, related_name="website_snapshot"
     )
 
     def delete(self, *args, **kwargs):
-        if self.archive:
-            self.archive.delete()
+        if self.snapshot:
+            self.snapshot.delete()
         super(Post, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
@@ -74,7 +74,7 @@ class Post(models.Model):
         return f"{self.title} | {self.url}"
 
     def queue_download(self, *args, **kwargs):
-        self.archive = Archive.objects.create()
+        self.snapshot = Snapshot.objects.create()
         self.save()
         t = threading.Thread(target=self.download_site, args=args, kwargs=kwargs)
         t.setDaemon(True)
@@ -92,6 +92,6 @@ class Post(models.Model):
                 return
         else:
             out = res.content
-        self.archive.content_type = content_type
-        self.archive.content.save(str(self.archive.id), io.BytesIO(out))
+        self.snapshot.content_type = content_type
+        self.snapshot.content.save(str(self.snapshot.id), io.BytesIO(out))
         super(Post, self).save(*args, **kwargs)

@@ -64,6 +64,20 @@ body {
     color: #777777;
 }
 
+.bookmark .tags a {
+    color: #bb4411;
+}
+
+.faved.bookmark a.title,
+.faved.bookmark .tags a {
+    color: #11a;
+}
+
+.faved {
+    border-left: dashed 2px #11a;
+    margin-left: -2px;
+}
+
 #banner {
     border-bottom: 1px dotted #aaa;
     padding: 5px;
@@ -111,10 +125,6 @@ a:visited {
     align-self: center;
 }
 
-.faved {
-    outline: dashed 2px #777777;
-}
-
 a.cancel-confirm {
     color: #11a;
 }
@@ -146,10 +156,6 @@ input {
 
 #tags {
     padding: 20px;
-}
-
-span.tags a{
-    color: #bb4411;
 }
 
 .prediction {
