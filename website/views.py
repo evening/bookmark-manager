@@ -19,7 +19,7 @@ from website.forms import (
     AccountDeleteForm,
     AddPostForm,
 )
-from website.models import Account, Archive, Post, Tag
+from website.models import Account, Snapshot, Post, Tag
 from website.utils import (
     clean_tags,
     create_tags,
@@ -40,13 +40,13 @@ def delete(request):
     return HttpResponse(status=200)
 
 
-def view_archive(request, uuid):
+def view_snapshot(request, uuid):
     try:
-        archive_obj = Archive.objects.get(id=uuid)
+        ss_obj = Snapshot.objects.get(id=uuid)
         return HttpResponse(
-            archive_obj.content, status=200, content_type=archive_obj.content_type
+            ss_obj.content, status=200, content_type=ss_obj.content_type
         )
-    except Archive.DoesNotExist:
+    except Snapshot.DoesNotExist:
         return HttpResponse("Not archived", status=500)
 
 
@@ -57,12 +57,12 @@ def edit(request):
     if not p.author == request.user:
         return HttpResponse("Not authorized", status=403)
 
-    archive_delete = None
+    ss_delete = None
     if (
-        p.archive and r.get("url") != p.url
-    ):  # if changing url when there's an archive, just delete
-        archive_delete = p.archive
-        p.archive = None
+        p.snapshot and r.get("url") != p.url
+    ):  # if changing url when there's an snapshot, just delete
+        ss_delete = p.snapshot
+        p.snapshot = None
 
     new_tags = clean_create(r.pop("tags", list())[0])
     p_tags = p.tags.all()
@@ -75,7 +75,7 @@ def edit(request):
         if hasattr(p, k):
             setattr(p, k, v)
 
-    if archive_delete:
+    if ss_delete:
         to_delete.delete()
 
     p.save()
@@ -149,9 +149,9 @@ class AccountDelete(LoginRequiredMixin, generic.FormView):
 
 def autoadd(request):
     r = copy.deepcopy(request.GET.dict())
-    to_archive = r.pop("archive", None)
+    to_snapshot = r.pop("snapshot", None)
     p = Post.objects.create(**r, author=request.user)
-    if to_archive:
+    if to_snapshot:
         p.queue_download()
     return HttpResponse(status=200)
 
@@ -188,7 +188,7 @@ class ProfileView(generic.ListView):
             ret = ret.filter(
                 Q(title__icontains=q)
                 | Q(url__icontains=q)
-                | Q(archive__content__iregex=rf"\b{q}\b")  # search archive/snapshot
+                | Q(snapshot__content__iregex=rf"\b{q}\b")  # search snapshot
             )
         return ret.order_by("-date")
 
@@ -291,7 +291,7 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj = form.save(commit=False)
         self.p_obj.author = self.request.user
         self.p_obj.save()
-        if self.request.POST.get("archive"):
+        if self.request.POST.get("snapshot"):
             self.p_obj.queue_download()
         for tag in create_tags(form.cleaned_data["tags"]):
             self.p_obj.tags.add(tag)

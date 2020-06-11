@@ -227,10 +227,10 @@ function update_bookmark(id, form_data) {
     if (response.status == 200) {
       let bookmark = document.getElementById(id);
       let new_data = JSON.parse(response.responseText);
-      /* archive gets destroyed if url updated */
+      /* snapshot gets destroyed if url updated */
       if (bookmark.querySelector(".url").href !== new_data["url"]) {
-        if (bookmark.contains(bookmark.querySelector(".archive"))) {
-          bookmark.querySelector(".archive").remove();
+        if (bookmark.contains(bookmark.querySelector(".snapshot"))) {
+          bookmark.querySelector(".snapshot").remove();
         }
       }
       bookmark.querySelector(".title").innerText = new_data["title"];

@@ -20,7 +20,7 @@ class SignUpForm(UserCreationForm):
 
 
 class AddPostForm(forms.ModelForm):
-    archive = forms.BooleanField(initial=False, required=False)
+    snapshot = forms.BooleanField(initial=False, required=False)
     tags = forms.CharField(label="Tags", required=False)
 
     class Meta:

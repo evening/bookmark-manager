@@ -24,7 +24,7 @@ def clean_create(s):
 def post_to_dict(p: Post):
     ret = model_to_dict(p)
     ret["tags"] = list(map(lambda t: t.name, ret["tags"]))
-    ret["archive"] = str(ret["archive"])
+    ret["snapshot"] = str(ret["snapshot"])
     return ret
 
 
