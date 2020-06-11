@@ -14,6 +14,14 @@ Clone of [pinboard.in](pinboard.in)
 
 ---
 
+## installation
+
+- install [monolith](https://github.com/Y2Z/monolith)
+- `conda env create -f environment.yml`
+- `python manage.py runserver`
+
+---
+
 ## bookmark shortcuts
 
 automatically add:

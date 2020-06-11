@@ -87,7 +87,7 @@ class Post(models.Model):
             return
         content_type = res.headers["content-type"]
         if "text/html" in content_type:  # if it's a website, include css in html file
-            out = subprocess.check_output(f"monolith {self.url} -j --silent")
+            out = subprocess.check_output(f"monolith {self.url} -j --silent",shell=True)
             if sys.getsizeof(out) > 25_000_000:  # in case too large with css/images
                 return
         else:
