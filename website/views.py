@@ -153,7 +153,7 @@ def autoadd(request):
     p = Post.objects.create(**r, author=request.user)
     if to_snapshot:
         p.queue_download()
-    return HttpResponse(status=200)
+    return HttpResponse("<script>window.close();</script>",status=200)
 
 
 class ProfileView(generic.ListView):
