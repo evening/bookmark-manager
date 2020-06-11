@@ -23,5 +23,5 @@ javascript:q=location.href;p=document.title;void(t=open('http://127.0.0.1:8000/a
 
 open popup to manually add:
 ```
-javascript:q=location.href;if(document.getSelection){d=document.getSelection();}else{d='';};p=document.title;void(open('http://127.0.0.1:8000/add?url='+encodeURIComponent(q)+'&description='+encodeURIComponent(d)+'&title='+encodeURIComponent(p),'bookmark-manager','toolbar=no,width=700,height=350'));
+javascript:q=location.href;if(document.getSelection){d=document.getSelection();}else{d='';};p=document.title;void(open('http://127.0.0.1:8000/add?url='+encodeURIComponent(q)+'&title='+encodeURIComponent(p)+'&close_after=1','bookmark-manager','toolbar=no,width=700,height=350'));
 ```

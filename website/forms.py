@@ -21,6 +21,7 @@ class SignUpForm(UserCreationForm):
 
 class AddPostForm(forms.ModelForm):
     snapshot = forms.BooleanField(initial=False, required=False)
+    close_after = forms.BooleanField(required=False, widget=forms.HiddenInput())
     tags = forms.CharField(label="Tags", required=False)
 
     class Meta:
@@ -28,8 +29,13 @@ class AddPostForm(forms.ModelForm):
         fields = ("title", "url", "fav")
 
     def __init__(self, *args, **kwargs):
+        url_value = kwargs.pop("url", None)
+        close_after_value = kwargs.pop("close_after", None)
+        title_value = kwargs.pop("title", None)
         super(AddPostForm, self).__init__(*args, **kwargs)
-        self.fields["url"].widget.attrs = {"value": "http://"}
+        self.fields["url"].widget.attrs = {"value": url_value}
+        self.fields["title"].widget.attrs = {"value": title_value}
+        self.fields["close_after"].widget.attrs = {"value": close_after_value}
         self.fields["tags"].widget.attrs = {"name": "tags"}
         self.fields["tags"].widget.attrs = {
             "onkeyup": "predict_tag()",

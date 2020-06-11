@@ -153,7 +153,7 @@ def autoadd(request):
     p = Post.objects.create(**r, author=request.user)
     if to_snapshot:
         p.queue_download()
-    return HttpResponse("<script>window.close();</script>",status=200)
+    return HttpResponse("<script>window.close();</script>", status=200)
 
 
 class ProfileView(generic.ListView):
@@ -291,15 +291,23 @@ class Add(LoginRequiredMixin, generic.CreateView):
         self.p_obj = form.save(commit=False)
         self.p_obj.author = self.request.user
         self.p_obj.save()
-        if self.request.POST.get("snapshot"):
+        if form.cleaned_data.get("snapshot"):
             self.p_obj.queue_download()
         for tag in create_tags(form.cleaned_data["tags"]):
             self.p_obj.tags.add(tag)
+        if form.cleaned_data.get("close_after", False):
+            return HttpResponse("<script>window.close();</script>", status=200)
         return redirect("index")
+
+    def get_form_kwargs(self):
+        # pass in user so i can use check_password() in forms.py
+        kw = super(Add, self).get_form_kwargs()
+        kw["url"] = self.request.GET.get("url", "http://")
+        kw["title"] = self.request.GET.get("title", "")
+        kw["close_after"] = self.request.GET.get("close_after", False)
+        return kw
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        title = website_title + "Add new link"
         data["tags"] = Tag.objects.filter(post_tag__author=self.request.user).distinct()
-
         return data
