@@ -1,6 +1,6 @@
 # bookmark manager
 
-Clone of [pinboard.in](pinboard.in)
+Clone of [pinboard.in](http://pinboard.in)
 
 ## features
 
