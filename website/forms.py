@@ -20,7 +20,7 @@ class SignUpForm(UserCreationForm):
 
 
 class AddPostForm(forms.ModelForm):
-    snapshot = forms.BooleanField(initial=False, required=False)
+    snapshot = forms.BooleanField(initial=False, required=False,help_text="<i>archives page to view, even if down</i>")
     close_after = forms.BooleanField(required=False, widget=forms.HiddenInput())
     tags = forms.CharField(label="Tags", required=False)
 
