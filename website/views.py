@@ -153,7 +153,7 @@ def autoadd(request):
     p = Post.objects.create(**r, author=request.user)
     if to_snapshot:
         p.queue_download()
-    return HttpResponse("<script>window.close();</script>", status=200)
+    return HttpResponse("<script>window.open('','_parent',''); window.close();</script>", status=200)
 
 
 class ProfileView(generic.ListView):
@@ -296,7 +296,7 @@ class Add(LoginRequiredMixin, generic.CreateView):
         for tag in create_tags(form.cleaned_data["tags"]):
             self.p_obj.tags.add(tag)
         if form.cleaned_data.get("close_after", False):
-            return HttpResponse("<script>window.close();</script>", status=200)
+            return HttpResponse("<script>window.open('','_parent',''); window.close();</script>", status=200)
         return redirect("index")
 
     def get_form_kwargs(self):
@@ -310,4 +310,7 @@ class Add(LoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data["tags"] = Tag.objects.filter(post_tag__author=self.request.user).distinct()
+        title = website_title + "Add Bookmark"
+        data["title"] = title
+
         return data
