@@ -45,7 +45,7 @@ class Snapshot(models.Model):
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=100, blank=True, default="")
+    title = models.CharField(max_length=200, blank=True, default="")
     url = models.URLField()
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
