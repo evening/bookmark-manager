@@ -68,6 +68,12 @@ class Post(models.Model):
                 self.title = BeautifulSoup(requests.get(self.url).text).title.text
             except:
                 self.title = self.url
+
+        if Post.objects.filter(
+            title=self.title,
+            url=self.url
+        ).count():
+            return
         super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
