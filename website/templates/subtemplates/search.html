@@ -1,4 +1,4 @@
 <form action="{% url 'profile' username=view.kwargs.username %}">
-    <input name="q">
+    <input name="q" value="{{request.GET.q}}">
     <input type="submit">
 </form>
