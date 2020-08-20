@@ -2,7 +2,7 @@
 
 Clone of [pinboard.in](http://pinboard.in) (which may be a clone of Delicious?)
 
-![subpage](docs/img/demo.gif)
+![demo](docs/demo.gif)
 
 ## features
 
