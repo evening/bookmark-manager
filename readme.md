@@ -1,14 +1,15 @@
 # bookmark manager
 
-Clone of [pinboard.in](http://pinboard.in)
+Clone of [pinboard.in](http://pinboard.in) (which may be a clone of Delicious?)
+
+![subpage](docs/img/demo.gif)
 
 ## features
 
 - bookmark websites
 - add tags to websites
-- filter by tag
-- search by name 
-- archive websites, search through them
+- filter by tag, search
+- archive websites
 - share bookmarks with others (or put your profile on private)
 - shortcuts in browser bookmark tab
 
