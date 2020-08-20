@@ -84,12 +84,16 @@ class Post(models.Model):
         # https://github.com/Y2Z/monolith
         res = requests.get(self.url)
         if sys.getsizeof(res.content) > 25_000_000:  # don't continue if file too large
-            return
+            self.snapshot.delete()
+            self.snapshot = None
+            return self.save()
         content_type = res.headers["content-type"]
         if "text/html" in content_type:  # if it's a website, include css in html file
             out = subprocess.check_output(f"monolith {self.url} -j --silent",shell=True)
             if sys.getsizeof(out) > 25_000_000:  # in case too large with css/images
-                return
+                self.snapshot.delete()
+                self.snapshot = None
+                return self.save()
         else:
             out = res.content
         self.snapshot.content_type = content_type

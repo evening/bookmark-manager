@@ -15,7 +15,7 @@
             
             <div id="logo">
                 {% if user.is_authenticated %}
-                <a href="{% url 'index' %}">Bookmark Manager ({{ user.username }})</a>
+                <a href="{% url 'index' %}">Bookmark Manager ({{ request.user.username }})</a>
                 {% else %}
                 <a href="{% url 'index' %}">Bookmark Manager</a>
                 {% endif %}
