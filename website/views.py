@@ -148,6 +148,8 @@ class AccountDelete(LoginRequiredMixin, generic.FormView):
 
 
 def autoadd(request):
+    if not request.user.username:
+        return redirect("index")
     r = copy.deepcopy(request.GET.dict())
     to_snapshot = r.pop("snapshot", None)
     p = Post.objects.create(**r, author=request.user)
@@ -160,7 +162,7 @@ class ProfileView(generic.ListView):
     template_name = "profile.html"
     model = Post
     context_object_name = "posts"
-    paginate_by = 20
+    paginate_by = 40
 
     def dispatch(self, request, *args, **kwargs):
         if self.kwargs.get("username"):

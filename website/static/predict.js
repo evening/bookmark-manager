@@ -56,5 +56,8 @@ function predict_tag() {
             tag_results = null; // reset predictions
         }
     }
+    if(tag_results && tag_results.length > 0) {
+        tag_results[0] = "<mark>"+tag_results[0]+"</mark>"
+    }
     elem.parentNode.querySelector(".prediction").innerHTML = tag_results;
 }
