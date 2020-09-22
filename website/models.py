@@ -55,31 +55,35 @@ class Post(models.Model):
         Snapshot, on_delete=models.CASCADE, null=True, related_name="website_snapshot"
     )
 
+    def __str__(self):
+        return f"{self.title} | {self.url}"
+
     def delete(self, *args, **kwargs):
         if self.snapshot:
             self.snapshot.delete()
         super(Post, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
+        # auto set title if user left it blank
         if not self.title:
             try:
                 if not urlparse(self.url).scheme:
                     self.url = "http://" + self.url
                 self.title = BeautifulSoup(requests.get(self.url).text).title.text
-            except:
+            except AttributeError:
+                # set title to url if no title
                 self.title = self.url
 
-        if Post.objects.filter(
-            title=self.title,
-            url=self.url
-        ).count():
+        # if there's already a post with the same title AND url..
+        # ..it was probably a double click and can be ignored
+        if Post.objects.filter(title=self.title, url=self.url).count():
             return
+        
         super(Post, self).save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.title} | {self.url}"
-
     def queue_download(self, *args, **kwargs):
+        # use threading to prevent page from just loading until finished
+        # sometimes archiving can take a bit
         self.snapshot = Snapshot.objects.create()
         self.save()
         t = threading.Thread(target=self.download_site, args=args, kwargs=kwargs)
@@ -87,21 +91,27 @@ class Post(models.Model):
         t.start()
 
     def download_site(self, *args, **kwargs):
-        # https://github.com/Y2Z/monolith
         res = requests.get(self.url)
-        if sys.getsizeof(res.content) > 25_000_000:  # don't continue if file too large
+        # stop early if filesize large to avoid abuse
+        if sys.getsizeof(res.content) > 25_000_000:
             self.snapshot.delete()
             self.snapshot = None
             return self.save()
-        content_type = res.headers["content-type"]
-        if "text/html" in content_type:  # if it's a website, include css in html file
-            out = subprocess.check_output(f"monolith {self.url} -j --silent",shell=True)
-            if sys.getsizeof(out) > 25_000_000:  # in case too large with css/images
+        self.snapshot.content_type = res.headers["content-type"]
+        if "text/html" in self.snapshot.content_type:            
+            # if it's a website, include css/images in html file using monolith..
+            # https://github.com/Y2Z/monolith
+            out = subprocess.check_output(
+                f"monolith {self.url} -j --silent",
+                shell=True
+            )
+            if sys.getsizeof(out) > 25_000_000:
+                # ..unless the images are large
                 self.snapshot.delete()
                 self.snapshot = None
                 return self.save()
         else:
+            # if it's not a website, just download raw data
             out = res.content
-        self.snapshot.content_type = content_type
         self.snapshot.content.save(str(self.snapshot.id), io.BytesIO(out))
         super(Post, self).save(*args, **kwargs)

@@ -13,20 +13,20 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from website.forms import (
+    AccountDeleteForm,
+    AddPostForm,
     AddPostForm,
     EditProfileForm,
     SignUpForm,
-    AccountDeleteForm,
-    AddPostForm,
 )
 from website.models import Account, Snapshot, Post, Tag
 from website.utils import (
+    clean_create,
+    clean_tags_str,
     clean_tags,
     create_tags,
-    clean_tags_str,
-    clean_create,
-    post_to_dict,
     post_or_404,
+    post_to_dict,
 )
 
 website_title = "Bookmark Manager :: "
@@ -155,7 +155,10 @@ def autoadd(request):
     p = Post.objects.create(**r, author=request.user)
     if to_snapshot:
         p.queue_download()
-    return HttpResponse("<script>window.open('','_parent',''); window.close();</script>", status=200)
+    return HttpResponse(
+        "<script>window.open('','_parent',''); window.close();</script>",
+        status=200
+    )
 
 
 class ProfileView(generic.ListView):
@@ -298,7 +301,10 @@ class Add(LoginRequiredMixin, generic.CreateView):
         for tag in create_tags(form.cleaned_data["tags"]):
             self.p_obj.tags.add(tag)
         if form.cleaned_data.get("close_after", False):
-            return HttpResponse("<script>window.open('','_parent',''); window.close();</script>", status=200)
+            return HttpResponse(
+                "<script>window.open('','_parent',''); window.close();</script>",
+                status=200,
+            )
         return redirect("index")
 
     def get_form_kwargs(self):

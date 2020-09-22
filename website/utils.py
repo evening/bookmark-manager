@@ -17,7 +17,7 @@ def create_tags(tags: List[str]) -> List[Tag]:
     return list(map(lambda t: Tag.objects.get_or_create(name=t)[0], tags))
 
 
-def clean_create(s):
+def clean_create(s: str):
     return create_tags(clean_tags(s))
 
 
