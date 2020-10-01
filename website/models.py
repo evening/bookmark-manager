@@ -16,12 +16,12 @@ def upload_to(instance, filename):
 
 
 class Account(AbstractUser):
-    username = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
+    description = models.TextField(blank=True, null=True)
     email = models.EmailField(db_index=True, unique=True, blank=False)
     first_name = None
     last_name = None
     public = models.BooleanField(default=False)
-    description = models.TextField(blank=True, null=True)
+    username = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
 
 class Tag(models.Model):
     name = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
@@ -31,10 +31,10 @@ class Tag(models.Model):
 
 
 class Snapshot(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    date = models.DateTimeField(auto_now=True)
     content = models.FileField(upload_to=upload_to)
     content_type = models.CharField(max_length=100, blank=True, default="")
+    date = models.DateTimeField(auto_now=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return f"{self.date} | {self.website_snapshot}"
@@ -45,15 +45,15 @@ class Snapshot(models.Model):
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=200, blank=True, default="")
-    url = models.URLField()
-    date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
     fav = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag, related_name="post_tag")
     snapshot = models.OneToOneField(
         Snapshot, on_delete=models.CASCADE, null=True, related_name="website_snapshot"
     )
+    tags = models.ManyToManyField(Tag, related_name="post_tag")
+    title = models.CharField(max_length=200, blank=True, default="")
+    url = models.URLField()
 
     def __str__(self):
         return f"{self.title} | {self.url}"
