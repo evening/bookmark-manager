@@ -21,7 +21,7 @@ class Account(AbstractUser):
     first_name = None
     last_name = None
     public = models.BooleanField(default=False)
-
+    description = models.TextField(blank=True, null=True)
 
 class Tag(models.Model):
     name = models.CharField(db_index=True, max_length=30, unique=True, blank=False)
